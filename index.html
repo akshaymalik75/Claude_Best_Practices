@@ -1,1521 +1,1512 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="midnight">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude Code — Best Practices</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Counter-Strike Clone</title>
 <style>
-/* ═══════════════════════════════════════════════════════════
-   THEME SYSTEM — 7 themes via data-theme attribute
-═══════════════════════════════════════════════════════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
+canvas { display: block; }
 
-/* ── MIDNIGHT (electric purple on deep dark) ── */
-[data-theme="midnight"] {
-  --bg: #080b14; --bg2: #0d1117; --surface: #0f1420;
-  --glass: rgba(15,20,32,0.7); --glass2: rgba(20,27,46,0.5);
-  --border: rgba(139,92,246,0.2); --border2: rgba(255,255,255,0.07);
-  --text: #e8eaf6; --muted: #6b7fa3; --dim: #3d4a6b;
-  --a: #818cf8; --a2: #c084fc; --a3: #7c3aed;
-  --grad: linear-gradient(135deg,#7c3aed,#6366f1);
-  --grad2: linear-gradient(135deg,#c084fc,#818cf8);
-  --glow: rgba(124,58,237,0.4);
-  --green:#34d399;--yellow:#fbbf24;--red:#f87171;--blue:#60a5fa;--orange:#fb923c;
-  --green-bg:rgba(52,211,153,.1);--yellow-bg:rgba(251,191,36,.1);
-  --red-bg:rgba(248,113,113,.1);--blue-bg:rgba(96,165,250,.1);--tip-bg:rgba(124,58,237,.12);
-  --code-bg:#070a12; --code-header:#0f1420;
-  --scrollbar: rgba(124,58,237,0.4);
-  --sidebar-w:272px; --header-h:58px;
-}
-/* ── AURORA (teal/emerald on near-black) ── */
-[data-theme="aurora"] {
-  --bg:#071012;--bg2:#0a1a1c;--surface:#0c1e20;
-  --glass:rgba(12,30,32,0.75);--glass2:rgba(16,38,40,0.5);
-  --border:rgba(52,211,153,0.2);--border2:rgba(255,255,255,0.07);
-  --text:#d1faf0;--muted:#5a8a7e;--dim:#2d5a52;
-  --a:#34d399;--a2:#6ee7b7;--a3:#059669;
-  --grad:linear-gradient(135deg,#059669,#0891b2);
-  --grad2:linear-gradient(135deg,#6ee7b7,#67e8f9);
-  --glow:rgba(52,211,153,0.35);
-  --green:#34d399;--yellow:#fbbf24;--red:#f87171;--blue:#67e8f9;--orange:#fb923c;
-  --green-bg:rgba(52,211,153,.12);--yellow-bg:rgba(251,191,36,.1);
-  --red-bg:rgba(248,113,113,.1);--blue-bg:rgba(103,232,249,.1);--tip-bg:rgba(5,150,105,.12);
-  --code-bg:#050e10;--code-header:#0c1e20;
-  --scrollbar:rgba(52,211,153,0.4);
-  --sidebar-w:272px;--header-h:58px;
-}
-/* ── NEON (hot pink + cyan on deep black) ── */
-[data-theme="neon"] {
-  --bg:#06040f;--bg2:#0a0615;--surface:#0f0a1e;
-  --glass:rgba(15,10,30,0.8);--glass2:rgba(20,14,40,0.5);
-  --border:rgba(236,72,153,0.25);--border2:rgba(255,255,255,0.07);
-  --text:#fce7f3;--muted:#7a4f7a;--dim:#3d2050;
-  --a:#f472b6;--a2:#e879f9;--a3:#ec4899;
-  --grad:linear-gradient(135deg,#ec4899,#8b5cf6);
-  --grad2:linear-gradient(135deg,#f9a8d4,#c4b5fd);
-  --glow:rgba(236,72,153,0.4);
-  --green:#4ade80;--yellow:#facc15;--red:#fb7185;--blue:#22d3ee;--orange:#fb923c;
-  --green-bg:rgba(74,222,128,.1);--yellow-bg:rgba(250,204,21,.1);
-  --red-bg:rgba(251,113,133,.1);--blue-bg:rgba(34,211,238,.1);--tip-bg:rgba(236,72,153,.12);
-  --code-bg:#04020a;--code-header:#0f0a1e;
-  --scrollbar:rgba(236,72,153,0.4);
-  --sidebar-w:272px;--header-h:58px;
-}
-/* ── OCEAN (deep blue with cyan) ── */
-[data-theme="ocean"] {
-  --bg:#040d1e;--bg2:#071428;--surface:#091830;
-  --glass:rgba(9,24,48,0.75);--glass2:rgba(12,30,60,0.5);
-  --border:rgba(56,189,248,0.2);--border2:rgba(255,255,255,0.07);
-  --text:#e0f2fe;--muted:#4a7fa0;--dim:#1e4060;
-  --a:#38bdf8;--a2:#7dd3fc;--a3:#0ea5e9;
-  --grad:linear-gradient(135deg,#0ea5e9,#2563eb);
-  --grad2:linear-gradient(135deg,#7dd3fc,#93c5fd);
-  --glow:rgba(56,189,248,0.35);
-  --green:#34d399;--yellow:#fbbf24;--red:#f87171;--blue:#38bdf8;--orange:#fb923c;
-  --green-bg:rgba(52,211,153,.1);--yellow-bg:rgba(251,191,36,.1);
-  --red-bg:rgba(248,113,113,.1);--blue-bg:rgba(56,189,248,.12);--tip-bg:rgba(14,165,233,.12);
-  --code-bg:#020810;--code-header:#091830;
-  --scrollbar:rgba(56,189,248,0.4);
-  --sidebar-w:272px;--header-h:58px;
-}
-/* ── SUNSET (amber/orange on warm dark) ── */
-[data-theme="sunset"] {
-  --bg:#0f0a05;--bg2:#17100a;--surface:#1e160d;
-  --glass:rgba(30,22,13,0.8);--glass2:rgba(40,28,16,0.5);
-  --border:rgba(251,146,60,0.22);--border2:rgba(255,255,255,0.07);
-  --text:#fef3c7;--muted:#8a6040;--dim:#4a3020;
-  --a:#fb923c;--a2:#fcd34d;--a3:#f97316;
-  --grad:linear-gradient(135deg,#f97316,#eab308);
-  --grad2:linear-gradient(135deg,#fcd34d,#fdba74);
-  --glow:rgba(249,115,22,0.4);
-  --green:#86efac;--yellow:#fde047;--red:#fca5a5;--blue:#93c5fd;--orange:#fb923c;
-  --green-bg:rgba(134,239,172,.1);--yellow-bg:rgba(253,224,71,.1);
-  --red-bg:rgba(252,165,165,.1);--blue-bg:rgba(147,197,253,.1);--tip-bg:rgba(249,115,22,.12);
-  --code-bg:#0a0703;--code-header:#1e160d;
-  --scrollbar:rgba(249,115,22,0.4);
-  --sidebar-w:272px;--header-h:58px;
-}
-/* ── DAYLIGHT (clean white, professional blue) ── */
-[data-theme="daylight"] {
-  --bg:#f8fafc;--bg2:#f1f5f9;--surface:#ffffff;
-  --glass:rgba(255,255,255,0.85);--glass2:rgba(248,250,252,0.7);
-  --border:rgba(99,102,241,0.15);--border2:rgba(0,0,0,0.08);
-  --text:#0f172a;--muted:#64748b;--dim:#94a3b8;
-  --a:#4f46e5;--a2:#7c3aed;--a3:#4338ca;
-  --grad:linear-gradient(135deg,#4f46e5,#7c3aed);
-  --grad2:linear-gradient(135deg,#6366f1,#a78bfa);
-  --glow:rgba(79,70,229,0.25);
-  --green:#059669;--yellow:#d97706;--red:#dc2626;--blue:#2563eb;--orange:#ea580c;
-  --green-bg:rgba(5,150,105,.08);--yellow-bg:rgba(217,119,6,.08);
-  --red-bg:rgba(220,38,38,.08);--blue-bg:rgba(37,99,235,.08);--tip-bg:rgba(79,70,229,.08);
-  --code-bg:#1e293b;--code-header:#0f172a;
-  --scrollbar:rgba(79,70,229,0.3);
-  --sidebar-w:272px;--header-h:58px;
-}
-/* ── FOREST (sage green on dark earthy) ── */
-[data-theme="forest"] {
-  --bg:#080f0a;--bg2:#0d1710;--surface:#111f14;
-  --glass:rgba(17,31,20,0.8);--glass2:rgba(22,40,26,0.5);
-  --border:rgba(134,239,172,0.18);--border2:rgba(255,255,255,0.07);
-  --text:#dcfce7;--muted:#5a8064;--dim:#2d4a34;
-  --a:#86efac;--a2:#bbf7d0;--a3:#16a34a;
-  --grad:linear-gradient(135deg,#16a34a,#15803d);
-  --grad2:linear-gradient(135deg,#86efac,#d9f99d);
-  --glow:rgba(134,239,172,0.35);
-  --green:#86efac;--yellow:#fde047;--red:#fca5a5;--blue:#93c5fd;--orange:#fdba74;
-  --green-bg:rgba(134,239,172,.1);--yellow-bg:rgba(253,224,71,.1);
-  --red-bg:rgba(252,165,165,.1);--blue-bg:rgba(147,197,253,.1);--tip-bg:rgba(22,163,74,.12);
-  --code-bg:#050c07;--code-header:#111f14;
-  --scrollbar:rgba(134,239,172,0.35);
-  --sidebar-w:272px;--header-h:58px;
+#blocker {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85); z-index: 100;
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   BASE RESET & GLOBALS
-═══════════════════════════════════════════════════════════ */
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;font-size:16px}
-body{
-  font-family:'Inter',system-ui,-apple-system,sans-serif;
-  background:var(--bg);color:var(--text);line-height:1.75;
-  min-height:100vh;transition:background .3s,color .3s;
+#menu {
+  text-align: center; color: #fff;
 }
 
-/* ── SUBTLE BACKGROUND TEXTURE ── */
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% -10%, var(--glow), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 110%, var(--glow), transparent);
-  opacity:.4;
+#menu h1 {
+  font-size: 64px; color: #ff6600;
+  text-shadow: 0 0 20px rgba(255,102,0,0.5);
+  margin-bottom: 10px; letter-spacing: 4px;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PROGRESS BAR
-═══════════════════════════════════════════════════════════ */
-#pbar{
-  position:fixed;top:0;left:0;height:3px;z-index:1000;width:0;
-  background:var(--grad);
-  box-shadow:0 0 12px var(--glow);
-  transition:width .08s linear;
+#menu h2 {
+  font-size: 18px; color: #aaa; margin-bottom: 40px; font-weight: normal;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   HEADER
-═══════════════════════════════════════════════════════════ */
-.hdr{
-  position:sticky;top:0;z-index:500;height:var(--header-h);
-  display:flex;align-items:center;gap:16px;padding:0 24px;
-  background:var(--glass);
-  border-bottom:1px solid var(--border2);
-  backdrop-filter:blur(20px) saturate(180%);
-  -webkit-backdrop-filter:blur(20px) saturate(180%);
-}
-.hdr-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-.hdr-logo{
-  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
-  background:var(--grad);box-shadow:0 4px 14px var(--glow);
-  font-size:1.1rem;flex-shrink:0;
-}
-.hdr-title{font-size:1rem;font-weight:700;color:var(--text)}
-.hdr-title em{font-style:normal;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hdr-pill{
-  font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
-  padding:3px 10px;border-radius:20px;
-  background:var(--tip-bg);color:var(--a);border:1px solid var(--border);
-  white-space:nowrap;
+#menu .start-btn {
+  padding: 15px 50px; font-size: 22px; background: #ff6600;
+  border: none; color: #fff; cursor: pointer; border-radius: 4px;
+  transition: all 0.3s; letter-spacing: 2px;
 }
 
-/* Theme Selector */
-.theme-select-wrap{margin-left:auto;display:flex;align-items:center;gap:10px}
-.theme-label{font-size:.75rem;color:var(--muted);font-weight:500;white-space:nowrap}
-.theme-select{
-  appearance:none;-webkit-appearance:none;
-  background:var(--glass2);border:1px solid var(--border2);
-  color:var(--text);padding:6px 28px 6px 12px;border-radius:10px;
-  font-size:.8rem;font-family:'Inter',sans-serif;cursor:pointer;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7fa3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 10px center;
-  transition:border-color .2s,box-shadow .2s;min-width:130px;
-}
-.theme-select:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px var(--tip-bg)}
+#menu .start-btn:hover { background: #ff8833; transform: scale(1.05); }
 
-/* Theme color dots inside select label area */
-.theme-dots{display:flex;gap:5px;align-items:center}
-.dot{width:10px;height:10px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s,border-color .15s}
-.dot:hover{transform:scale(1.3)}
-.dot.active-dot{border-color:var(--text);transform:scale(1.25)}
-
-/* ═══════════════════════════════════════════════════════════
-   LAYOUT
-═══════════════════════════════════════════════════════════ */
-.wrap{
-  display:flex;min-height:calc(100vh - var(--header-h));
-  position:relative;z-index:1;
+#menu .controls {
+  margin-top: 40px; color: #888; font-size: 14px; line-height: 2;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   SIDEBAR
-═══════════════════════════════════════════════════════════ */
-.nav{
-  width:var(--sidebar-w);min-width:var(--sidebar-w);
-  background:var(--glass);
-  border-right:1px solid var(--border2);
-  position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));
-  overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--scrollbar) transparent;
-  padding:16px 0 40px;
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-}
-.nav::-webkit-scrollbar{width:3px}
-.nav::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:4px}
-.nav-section{
-  padding:18px 18px 5px;font-size:.63rem;font-weight:700;
-  text-transform:uppercase;letter-spacing:1.4px;color:var(--dim);
-}
-.nav a{
-  display:flex;align-items:center;gap:10px;
-  padding:8px 16px 8px 18px;font-size:.82rem;color:var(--muted);
-  text-decoration:none;border-left:2px solid transparent;
-  transition:all .18s cubic-bezier(.4,0,.2,1);position:relative;
-}
-.nav a::after{
-  content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);
-  width:0;height:0;border-radius:50%;background:var(--glow);
-  transition:all .3s;
-}
-.nav a:hover{background:rgba(255,255,255,.04);color:var(--text);padding-left:22px}
-.nav a.active{
-  color:var(--a);background:var(--tip-bg);
-  border-left-color:var(--a);font-weight:600;
-}
-.nav a.active::after{width:4px;height:4px;right:12px}
-.nav-icon{
-  width:22px;height:22px;display:grid;place-items:center;
-  font-size:.85rem;flex-shrink:0;
+#menu .controls span { color: #ff6600; font-weight: bold; }
+
+#hud {
+  position: fixed; bottom: 0; left: 0; width: 100%; z-index: 50;
+  pointer-events: none; padding: 20px;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   CONTENT AREA
-═══════════════════════════════════════════════════════════ */
-.content{flex:1;padding:52px 60px;max-width:960px}
-.content > section{display:none;animation:slideIn .3s cubic-bezier(.4,0,.2,1)}
-.content > section.active{display:block}
-@keyframes slideIn{
-  from{opacity:0;transform:translateY(12px)}
-  to{opacity:1;transform:translateY(0)}
+#health-bar-container {
+  position: fixed; bottom: 20px; left: 20px;
+  display: flex; align-items: center; gap: 10px;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   HERO SECTION
-═══════════════════════════════════════════════════════════ */
-.hero{margin-bottom:44px}
-.hero-tag{
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;
-  color:var(--a);background:var(--tip-bg);border:1px solid var(--border);
-  padding:4px 12px;border-radius:20px;margin-bottom:16px;
+#health-icon { font-size: 28px; }
+#health-bar {
+  width: 200px; height: 8px; background: rgba(255,255,255,0.1);
+  border-radius: 4px; overflow: hidden;
 }
-.hero h1{
-  font-size:2.6rem;font-weight:900;line-height:1.15;margin-bottom:14px;
-  letter-spacing:-.03em;
+#health-fill {
+  width: 100%; height: 100%; background: linear-gradient(90deg, #00ff44, #44ff88);
+  border-radius: 4px; transition: width 0.3s;
 }
-.hero h1 em{
-  font-style:normal;
-  background:var(--grad2);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.hero .lead{
-  font-size:1.05rem;color:var(--muted);max-width:700px;
-  line-height:1.75;font-weight:400;
+#health-text {
+  color: #fff; font-size: 24px; font-weight: bold;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   TYPOGRAPHY
-═══════════════════════════════════════════════════════════ */
-.content h2{
-  font-size:1.35rem;font-weight:700;margin:48px 0 16px;
-  display:flex;align-items:center;gap:10px;
-  letter-spacing:-.015em;
+#armor-bar-container {
+  position: fixed; bottom: 50px; left: 20px;
+  display: flex; align-items: center; gap: 10px;
 }
-.content h2::before{
-  content:'';display:block;width:4px;height:22px;
-  background:var(--grad);border-radius:4px;flex-shrink:0;
+#armor-bar {
+  width: 200px; height: 6px; background: rgba(255,255,255,0.1);
+  border-radius: 4px; overflow: hidden;
 }
-.content h3{font-size:1.05rem;font-weight:600;margin:28px 0 10px;color:var(--a2)}
-.content p{margin-bottom:15px;color:var(--text)}
-.content ul,.content ol{margin:0 0 16px 22px}
-.content li{margin-bottom:7px}
-.content hr{border:none;border-top:1px solid var(--border2);margin:40px 0}
-.content strong{color:var(--text);font-weight:600}
-.content a{color:var(--a);text-decoration:none;border-bottom:1px solid var(--border)}
-.content a:hover{color:var(--a2);border-bottom-color:var(--a2)}
-
-/* ═══════════════════════════════════════════════════════════
-   TABLES
-═══════════════════════════════════════════════════════════ */
-.tbl-wrap{overflow-x:auto;margin:16px 0 24px;border-radius:12px;border:1px solid var(--border2)}
-table{width:100%;border-collapse:collapse;font-size:.87rem}
-thead tr{background:linear-gradient(135deg,var(--tip-bg),rgba(255,255,255,.02))}
-th{
-  text-align:left;padding:12px 16px;
-  color:var(--a);font-weight:700;font-size:.8rem;
-  text-transform:uppercase;letter-spacing:.5px;
-  border-bottom:1px solid var(--border2);white-space:nowrap;
+#armor-fill {
+  width: 100%; height: 100%; background: linear-gradient(90deg, #0088ff, #44aaff);
+  border-radius: 4px; transition: width 0.3s;
 }
-td{padding:11px 16px;border-bottom:1px solid var(--border2);vertical-align:top}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(255,255,255,.02)}
-em.before{color:var(--muted);font-size:.83rem;font-style:italic}
-em.after{
-  font-style:normal;font-size:.83rem;
-  background:var(--green-bg);color:var(--green);
-  padding:2px 8px;border-radius:6px;display:inline-block;
+#armor-text {
+  color: #88bbff; font-size: 18px; font-weight: bold;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   CODE BLOCKS
-═══════════════════════════════════════════════════════════ */
-.code-wrap{margin:14px 0 22px;border-radius:12px;overflow:hidden;border:1px solid var(--border2)}
-.code-header{
-  background:var(--code-header);padding:10px 16px;
-  display:flex;align-items:center;gap:8px;
-  border-bottom:1px solid var(--border2);
+#ammo-display {
+  position: fixed; bottom: 20px; right: 20px;
+  color: #fff; font-size: 36px; font-weight: bold;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
 }
-.code-dots{display:flex;gap:6px}
-.code-dots span{width:11px;height:11px;border-radius:50%}
-.code-dots .r{background:#ff5f57}
-.code-dots .y{background:#febc2e}
-.code-dots .g{background:#28c840}
-.code-lang{margin-left:auto;font-size:.68rem;color:var(--dim);font-family:'JetBrains Mono',monospace;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
-pre{
-  background:var(--code-bg);padding:20px 22px;
-  overflow-x:auto;margin:0;position:relative;
-}
-pre code{font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.7;color:var(--text)}
-code:not(pre code){
-  font-family:'JetBrains Mono',monospace;font-size:.82em;
-  background:rgba(255,255,255,.06);border:1px solid var(--border2);
-  padding:2px 7px;border-radius:6px;color:var(--a2);
-}
-.copy-btn{
-  position:absolute;top:10px;right:12px;
-  background:var(--glass2);border:1px solid var(--border2);
-  color:var(--muted);padding:4px 11px;border-radius:7px;
-  cursor:pointer;font-size:.7rem;font-family:'Inter',sans-serif;
-  opacity:0;transition:opacity .2s,border-color .2s;
-}
-pre:hover .copy-btn{opacity:1}
-.copy-btn:hover{border-color:var(--a);color:var(--a)}
+#ammo-display .ammo-reserve { font-size: 20px; color: #aaa; }
 
-/* Standalone pre (no .code-wrap wrapper) */
-.content > section > pre,.step-body > pre,
-.pattern > pre,p + pre{
-  background:var(--code-bg);border:1px solid var(--border2);
-  border-radius:12px;padding:18px 20px;
-  overflow-x:auto;margin:12px 0 20px;position:relative;
+#crosshair {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); z-index: 50; pointer-events: none;
+}
+.ch-line {
+  position: absolute; background: rgba(0,255,100,0.9);
+}
+.ch-top { width: 2px; height: 12px; left: -1px; top: -18px; }
+.ch-bottom { width: 2px; height: 12px; left: -1px; top: 6px; }
+.ch-left { width: 12px; height: 2px; top: -1px; left: -18px; }
+.ch-right { width: 12px; height: 2px; top: -1px; left: 6px; }
+
+#score-display {
+  position: fixed; top: 20px; right: 20px;
+  color: #fff; font-size: 16px; text-align: right;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8); z-index: 50;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   CALLOUT BOXES
-═══════════════════════════════════════════════════════════ */
-.tip,.warn,.crit,.info,.note{
-  border-radius:12px;padding:16px 20px;margin:18px 0 24px;
-  border:1px solid;font-size:.91rem;
-  display:flex;gap:12px;align-items:flex-start;
+#kill-feed {
+  position: fixed; top: 20px; left: 20px;
+  color: #fff; font-size: 14px; z-index: 50;
 }
-.tip{background:var(--tip-bg);border-color:var(--border)}
-.warn{background:var(--yellow-bg);border-color:rgba(251,191,36,.25)}
-.crit{background:var(--red-bg);border-color:rgba(248,113,113,.25)}
-.info{background:var(--blue-bg);border-color:rgba(96,165,250,.25)}
-.callout-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
-
-.callout-title{font-weight:700;margin-bottom:3px;font-size:.85rem;text-transform:uppercase;letter-spacing:.4px}
-.tip .callout-title{color:var(--a)}
-.warn .callout-title{color:var(--yellow)}
-.crit .callout-title{color:var(--red)}
-.info .callout-title{color:var(--blue)}
-
-/* ═══════════════════════════════════════════════════════════
-   CARDS
-═══════════════════════════════════════════════════════════ */
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin:16px 0 26px}
-.card{
-  background:var(--glass2);border:1px solid var(--border2);border-radius:14px;
-  padding:20px;transition:transform .2s,border-color .2s,box-shadow .2s;
-  cursor:default;
+.kill-entry {
+  background: rgba(0,0,0,0.5); padding: 4px 10px;
+  margin-bottom: 3px; border-radius: 3px;
+  animation: fadeOut 4s forwards; border-left: 3px solid #ff6600;
 }
-.card:hover{
-  transform:translateY(-2px);border-color:var(--border);
-  box-shadow:0 8px 28px rgba(0,0,0,.3),0 0 0 1px var(--border);
-}
-.card-icon{font-size:1.5rem;margin-bottom:10px}
-.card h4{font-size:.95rem;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
-.card p{font-size:.84rem;color:var(--muted);margin:0;line-height:1.55}
+@keyframes fadeOut { 0%{opacity:1} 70%{opacity:1} 100%{opacity:0} }
 
-/* ═══════════════════════════════════════════════════════════
-   DO / DON'T
-═══════════════════════════════════════════════════════════ */
-.donts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0 26px}
-.do-box,.dont-box{border-radius:14px;padding:18px}
-.do-box{background:var(--green-bg);border:1px solid rgba(52,211,153,.25)}
-.dont-box{background:var(--red-bg);border:1px solid rgba(248,113,113,.25)}
-.do-box h5,.dont-box h5{font-size:.8rem;font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
-.do-box h5{color:var(--green)}.dont-box h5{color:var(--red)}
-.do-box ul,.dont-box ul{margin-left:16px}
-.do-box li,.dont-box li{font-size:.85rem;margin-bottom:5px}
-
-/* ═══════════════════════════════════════════════════════════
-   STEPS
-═══════════════════════════════════════════════════════════ */
-.steps{margin:20px 0 30px;display:flex;flex-direction:column;gap:2px}
-.step{display:flex;gap:16px;padding:20px 0;position:relative}
-.step:not(:last-child)::after{
-  content:'';position:absolute;left:16px;top:52px;bottom:-2px;
-  width:2px;background:var(--border2);
-}
-.step-num{
-  flex-shrink:0;width:34px;height:34px;border-radius:50%;
-  background:var(--grad);color:#fff;
-  display:grid;place-items:center;font-weight:800;font-size:.82rem;
-  box-shadow:0 0 14px var(--glow);z-index:1;
-}
-.step-body{flex:1}
-.step-body h4{font-size:.98rem;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
-
-/* ═══════════════════════════════════════════════════════════
-   FLOW
-═══════════════════════════════════════════════════════════ */
-.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0 24px}
-.flow-step{
-  padding:8px 18px;border-radius:30px;font-size:.83rem;font-weight:700;
-  background:var(--grad);color:#fff;
-  box-shadow:0 2px 10px var(--glow);letter-spacing:-.01em;
-}
-.flow-arrow{color:var(--dim);font-size:1.2rem}
-
-/* ═══════════════════════════════════════════════════════════
-   KEYBOARD KEYS
-═══════════════════════════════════════════════════════════ */
-kbd{
-  display:inline-block;padding:3px 9px;
-  background:var(--glass2);border:1px solid var(--border2);
-  border-bottom-width:3px;border-radius:7px;
-  font-family:'JetBrains Mono',monospace;font-size:.78rem;
-  color:var(--a2);box-shadow:0 2px 0 var(--border2);
+#weapon-name {
+  position: fixed; bottom: 55px; right: 20px;
+  color: #aaa; font-size: 13px; text-shadow: 0 0 10px rgba(0,0,0,0.8);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PATTERNS (failure/anti-pattern blocks)
-═══════════════════════════════════════════════════════════ */
-.pattern{
-  background:var(--glass2);border:1px solid var(--border2);border-radius:14px;
-  padding:20px;margin-bottom:14px;transition:border-color .2s;
+#round-display {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  color: #fff; font-size: 48px; font-weight: bold; z-index: 60;
+  text-shadow: 0 0 20px rgba(255,102,0,0.8);
+  opacity: 0; transition: opacity 0.5s; pointer-events: none;
 }
-.pattern:hover{border-color:var(--border)}
-.pattern h4{font-size:.95rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.p-problem{font-size:.86rem;color:var(--red);margin-bottom:6px;padding-left:4px;border-left:3px solid var(--red);padding:6px 10px;background:var(--red-bg);border-radius:0 8px 8px 0}
-.p-fix{font-size:.86rem;color:var(--green);padding:6px 10px;background:var(--green-bg);border-radius:0 8px 8px 0;border-left:3px solid var(--green)}
 
-/* ═══════════════════════════════════════════════════════════
-   STAT GRID
-═══════════════════════════════════════════════════════════ */
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 24px}
-.stat{background:var(--glass2);border:1px solid var(--border2);border-radius:14px;padding:20px;text-align:center}
-.stat-val{font-size:2rem;font-weight:900;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
-.stat-label{font-size:.78rem;color:var(--muted);margin-top:6px;font-weight:500}
-
-/* ═══════════════════════════════════════════════════════════
-   SCROLL TO TOP
-═══════════════════════════════════════════════════════════ */
-#scrolltop{
-  position:fixed;bottom:28px;right:28px;z-index:400;
-  width:40px;height:40px;border-radius:12px;
-  background:var(--grad);border:none;cursor:pointer;
-  display:grid;place-items:center;font-size:1.1rem;
-  box-shadow:0 4px 16px var(--glow);opacity:0;
-  transition:opacity .3s,transform .2s;
+#damage-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 40;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(255,0,0,0.4) 100%);
+  opacity: 0; transition: opacity 0.2s;
 }
-#scrolltop.show{opacity:1}
-#scrolltop:hover{transform:translateY(-2px)}
 
-/* ═══════════════════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════════════════ */
-@media(max-width:900px){
-  .wrap{flex-direction:column}
-  .nav{width:100%;min-width:auto;position:relative;top:auto;height:auto;display:flex;overflow-x:auto;padding:0;border-right:none;border-bottom:1px solid var(--border2)}
-  .nav-section{display:none}
-  .nav a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent;padding:12px 14px;flex-shrink:0}
-  .nav a:hover{padding-left:14px}
-  .nav a.active{border-left-color:transparent;border-bottom-color:var(--a)}
-  .content{padding:28px 18px}
-  .hero h1{font-size:1.9rem}
-  .donts{grid-template-columns:1fr}
-  .stat-grid{grid-template-columns:1fr}
-  .theme-label{display:none}
-  .hdr-pill{display:none}
+#hit-marker {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  pointer-events: none; z-index: 55; opacity: 0;
+}
+.hm-line {
+  position: absolute; background: #fff;
+}
+.hm-1 { width: 2px; height: 10px; transform: rotate(45deg); left: -8px; top: -8px; }
+.hm-2 { width: 2px; height: 10px; transform: rotate(-45deg); left: 6px; top: -8px; }
+.hm-3 { width: 2px; height: 10px; transform: rotate(45deg); left: 6px; top: 2px; }
+.hm-4 { width: 2px; height: 10px; transform: rotate(-45deg); left: -8px; top: 2px; }
+
+#minimap {
+  position: fixed; top: 60px; left: 20px; z-index: 50;
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
+  background: rgba(0,0,0,0.5);
+}
+
+#death-screen {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(139,0,0,0.5); z-index: 80;
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column; color: #fff;
+}
+#death-screen h2 { font-size: 48px; margin-bottom: 20px; }
+#death-screen p { font-size: 18px; color: #ddd; }
+
+#weapon-switch {
+  position: fixed; bottom: 100px; right: 20px;
+  color: #888; font-size: 12px; z-index: 50;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
 }
 </style>
 </head>
 <body>
 
-<!-- Progress bar -->
-<div id="pbar"></div>
-
-<!-- ═══ HEADER ═══════════════════════════════════════════════ -->
-<header class="hdr">
-  <a class="hdr-brand" href="#">
-    <div class="hdr-logo">⚡</div>
-    <span class="hdr-title">Claude Code <em>Best Practices</em></span>
-  </a>
-  <span class="hdr-pill">Official · Anthropic</span>
-
-  <div class="theme-select-wrap">
-    <span class="theme-label">Theme</span>
-    <div class="theme-dots" id="themeDots">
-      <div class="dot active-dot" data-t="midnight" style="background:linear-gradient(135deg,#7c3aed,#6366f1)" title="Midnight"></div>
-      <div class="dot" data-t="aurora" style="background:linear-gradient(135deg,#059669,#0891b2)" title="Aurora"></div>
-      <div class="dot" data-t="neon" style="background:linear-gradient(135deg,#ec4899,#8b5cf6)" title="Neon"></div>
-      <div class="dot" data-t="ocean" style="background:linear-gradient(135deg,#0ea5e9,#2563eb)" title="Ocean"></div>
-      <div class="dot" data-t="sunset" style="background:linear-gradient(135deg,#f97316,#eab308)" title="Sunset"></div>
-      <div class="dot" data-t="daylight" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)" title="Daylight"></div>
-      <div class="dot" data-t="forest" style="background:linear-gradient(135deg,#16a34a,#15803d)" title="Forest"></div>
-    </div>
-    <select class="theme-select" id="themeSelect" onchange="setTheme(this.value)">
-      <option value="midnight">🌌 Midnight</option>
-      <option value="aurora">🌿 Aurora</option>
-      <option value="neon">🌸 Neon</option>
-      <option value="ocean">🌊 Ocean</option>
-      <option value="sunset">🌅 Sunset</option>
-      <option value="daylight">☀️ Daylight</option>
-      <option value="forest">🌲 Forest</option>
-    </select>
-  </div>
-</header>
-
-<div class="wrap">
-
-<!-- ═══ SIDEBAR ═══════════════════════════════════════════════ -->
-<nav class="nav" id="nav">
-  <div class="nav-section">Overview</div>
-  <a href="#" class="active" onclick="show('intro',this);return false"><span class="nav-icon">🏠</span>Introduction</a>
-
-  <div class="nav-section">Core Practices</div>
-  <a href="#" onclick="show('verify',this);return false"><span class="nav-icon">✅</span>Verify Your Work</a>
-  <a href="#" onclick="show('explore',this);return false"><span class="nav-icon">🔍</span>Explore → Plan → Code</a>
-  <a href="#" onclick="show('context',this);return false"><span class="nav-icon">📌</span>Specific Context</a>
-
-  <div class="nav-section">Configuration</div>
-  <a href="#" onclick="show('claudemd',this);return false"><span class="nav-icon">📄</span>CLAUDE.md</a>
-  <a href="#" onclick="show('permissions',this);return false"><span class="nav-icon">🔐</span>Permissions</a>
-  <a href="#" onclick="show('tools',this);return false"><span class="nav-icon">🔧</span>CLI Tools & MCP</a>
-  <a href="#" onclick="show('hooks',this);return false"><span class="nav-icon">⚡</span>Hooks</a>
-  <a href="#" onclick="show('skills',this);return false"><span class="nav-icon">🎯</span>Skills & Subagents</a>
-
-  <div class="nav-section">Communication</div>
-  <a href="#" onclick="show('questions',this);return false"><span class="nav-icon">💬</span>Codebase Questions</a>
-  <a href="#" onclick="show('interview',this);return false"><span class="nav-icon">🎙</span>Claude Interviews You</a>
-
-  <div class="nav-section">Session Management</div>
-  <a href="#" onclick="show('correct',this);return false"><span class="nav-icon">🔄</span>Course-Correct Early</a>
-  <a href="#" onclick="show('ctxmgmt',this);return false"><span class="nav-icon">🧹</span>Manage Context</a>
-  <a href="#" onclick="show('checkpoints',this);return false"><span class="nav-icon">💾</span>Checkpoints & Resume</a>
-
-  <div class="nav-section">Scale & Automate</div>
-  <a href="#" onclick="show('noninteractive',this);return false"><span class="nav-icon">⚙</span>Non-Interactive Mode</a>
-  <a href="#" onclick="show('parallel',this);return false"><span class="nav-icon">⚡</span>Parallel Sessions</a>
-  <a href="#" onclick="show('fanout',this);return false"><span class="nav-icon">📡</span>Fan-Out Patterns</a>
-
-  <div class="nav-section">Mastery</div>
-  <a href="#" onclick="show('failures',this);return false"><span class="nav-icon">🚫</span>Common Failures</a>
-  <a href="#" onclick="show('intuition',this);return false"><span class="nav-icon">🧠</span>Build Intuition</a>
-</nav>
-
-<!-- ═══ CONTENT ════════════════════════════════════════════════ -->
-<main class="content">
-
-<!-- ── INTRO ─────────────────────────────────────────────── -->
-<section id="intro" class="active">
-  <div class="hero">
-    <div class="hero-tag">⚡ Official Anthropic Guide</div>
-    <h1>Claude Code <em>Best Practices</em></h1>
-    <p class="lead">Tips and patterns for getting the most out of Claude Code — from configuring your environment to scaling across parallel sessions. Based on Anthropic's internal teams and real-world engineers.</p>
-  </div>
-
-  <div class="stat-grid">
-    <div class="stat"><div class="stat-val">19</div><div class="stat-label">Sections covered</div></div>
-    <div class="stat"><div class="stat-val">7</div><div class="stat-label">Themes available</div></div>
-    <div class="stat"><div class="stat-val">#1</div><div class="stat-label">Constraint: context window</div></div>
-  </div>
-
-  <div class="info">
-    <span class="callout-icon">ℹ️</span>
-    <div class="callout-body">
-      <div class="callout-title">What is Claude Code?</div>
-      An agentic coding environment. Unlike a chatbot, it reads your files, runs commands, makes changes, and autonomously works through problems while you watch, redirect, or step away entirely.
+<div id="blocker">
+  <div id="menu">
+    <h1>COUNTER-OPS</h1>
+    <h2>TACTICAL SHOOTER</h2>
+    <button class="start-btn" onclick="startGame()">PLAY</button>
+    <div class="controls">
+      <span>WASD</span> Move &nbsp;|&nbsp; <span>MOUSE</span> Aim &nbsp;|&nbsp; <span>CLICK</span> Shoot<br>
+      <span>R</span> Reload &nbsp;|&nbsp; <span>SHIFT</span> Sprint &nbsp;|&nbsp; <span>SPACE</span> Jump<br>
+      <span>1/2</span> Switch Weapon &nbsp;|&nbsp; <span>ESC</span> Pause
     </div>
   </div>
-
-  <h2>The #1 Constraint: Context Window</h2>
-  <p>Almost every best practice boils down to one thing: <strong>the context window fills up fast, and performance degrades as it fills.</strong></p>
-  <p>Every message, every file Claude reads, and every command output shares the same limited budget. A single debugging session might consume tens of thousands of tokens.</p>
-
-  <div class="cards">
-    <div class="card" onclick="show('verify',document.querySelector('[onclick*=verify]'))" style="cursor:pointer">
-      <div class="card-icon">✅</div>
-      <h4>Verify Your Work</h4>
-      <p>The single highest-leverage thing you can do. Give Claude a way to check itself.</p>
-    </div>
-    <div class="card" onclick="show('explore',document.querySelector('[onclick*=explore]'))" style="cursor:pointer">
-      <div class="card-icon">🔍</div>
-      <h4>Explore First</h4>
-      <p>Separate research and planning from implementation to avoid solving the wrong problem.</p>
-    </div>
-    <div class="card" onclick="show('claudemd',document.querySelector('[onclick*=claudemd]'))" style="cursor:pointer">
-      <div class="card-icon">📄</div>
-      <h4>Write CLAUDE.md</h4>
-      <p>Persistent project configuration loaded at the start of every conversation.</p>
-    </div>
-    <div class="card" onclick="show('failures',document.querySelector('[onclick*=failures]'))" style="cursor:pointer">
-      <div class="card-icon">🚫</div>
-      <h4>Avoid Failures</h4>
-      <p>5 common anti-patterns that waste time — and their fast fixes.</p>
-    </div>
-  </div>
-
-  <h2>Keyboard Navigation</h2>
-  <p>Use <kbd>↓</kbd> <kbd>↑</kbd> to jump between sections. Click any card above to navigate directly.</p>
-</section>
-
-<!-- ── VERIFY ─────────────────────────────────────────────── -->
-<section id="verify">
-  <div class="hero">
-    <div class="hero-tag">✅ Core Practice #1</div>
-    <h1>Give Claude a Way to <em>Verify Its Work</em></h1>
-    <p class="lead">Include tests, screenshots, or expected outputs so Claude can check itself. This is the <strong>single highest-leverage thing you can do.</strong></p>
-  </div>
-
-  <p>Claude performs dramatically better when it can verify its own work. Without clear success criteria, it might produce something that <em>looks</em> right but doesn't actually work. You become the only feedback loop, and every mistake requires your attention.</p>
-
-  <h2>Verification Strategies</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Strategy</th><th>❌ Without Verification</th><th>✅ With Verification</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Provide test cases</strong></td><td><em class="before">"implement a function that validates email addresses"</em></td><td><em class="after">"write a validateEmail function. test cases: user@example.com → true, invalid → false. run the tests after implementing."</em></td></tr>
-      <tr><td><strong>Verify UI visually</strong></td><td><em class="before">"make the dashboard look better"</em></td><td><em class="after">"[paste screenshot] implement this design. take a screenshot of the result. list differences and fix them."</em></td></tr>
-      <tr><td><strong>Address root causes</strong></td><td><em class="before">"the build is failing"</em></td><td><em class="after">"the build fails with: [paste error]. fix it and verify the build succeeds. address root cause, don't suppress."</em></td></tr>
-    </tbody>
-  </table></div>
-
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Tip</div>UI changes can be verified using the Claude in Chrome extension. It opens new tabs in your browser, tests the UI, and iterates until the code works.</div>
-  </div>
-
-  <h2>What Makes Good Verification?</h2>
-  <div class="donts">
-    <div class="do-box"><h5>✅ Good verification</h5><ul>
-      <li>Automated test suite Claude can run</li>
-      <li>Expected outputs Claude can diff against</li>
-      <li>A linter or type-checker with exit codes</li>
-      <li>Screenshots for UI changes</li>
-      <li>Bash commands that check conditions</li>
-    </ul></div>
-    <div class="dont-box"><h5>❌ Poor verification</h5><ul>
-      <li>"Looks right to me" (you're the only loop)</li>
-      <li>No tests at all</li>
-      <li>Suppressed errors / warnings</li>
-      <li>Only checking happy paths</li>
-      <li>Assuming without running</li>
-    </ul></div>
-  </div>
-
-  <div class="warn">
-    <span class="callout-icon">⚠️</span>
-    <div class="callout-body"><div class="callout-title">Important</div>Invest in making your verification rock-solid. The quality of your verification directly determines the quality of Claude's output.</div>
-  </div>
-</section>
-
-<!-- ── EXPLORE ─────────────────────────────────────────────── -->
-<section id="explore">
-  <div class="hero">
-    <div class="hero-tag">🔍 Core Practice #2</div>
-    <h1>Explore First, Plan, Then <em>Code</em></h1>
-    <p class="lead">Separate research and planning from implementation to avoid solving the wrong problem. Use <strong>Plan Mode</strong> to keep phases distinct.</p>
-  </div>
-
-  <div class="flow">
-    <div class="flow-step">1 · Explore</div><span class="flow-arrow">→</span>
-    <div class="flow-step">2 · Plan</div><span class="flow-arrow">→</span>
-    <div class="flow-step">3 · Implement</div><span class="flow-arrow">→</span>
-    <div class="flow-step">4 · Commit</div>
-  </div>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <h4>Explore — Enter Plan Mode</h4>
-        <p>Claude reads files and answers questions <strong>without making any changes</strong>.</p>
-        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">Plan Mode</span></div>
-<pre><code>read /src/auth and understand how we handle sessions and login.
-also look at how we manage environment variables for secrets.</code><button class="copy-btn">copy</button></pre></div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <h4>Plan — Still in Plan Mode</h4>
-        <p>Ask Claude to create a detailed implementation plan before any code is written. Press <kbd>Ctrl+G</kbd> to open the plan in your editor for direct editing.</p>
-        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">Plan Mode</span></div>
-<pre><code>I want to add Google OAuth. What files need to change?
-What's the session flow? Create a plan.</code><button class="copy-btn">copy</button></pre></div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <h4>Implement — Switch to Normal Mode</h4>
-        <p>Let Claude code, verifying against its plan with tests after each change.</p>
-        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">Normal Mode</span></div>
-<pre><code>implement the OAuth flow from your plan. write tests for the
-callback handler, run the test suite and fix any failures.</code><button class="copy-btn">copy</button></pre></div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-body">
-        <h4>Commit</h4>
-        <p>Ask Claude to commit with a descriptive message and open a PR.</p>
-        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">Normal Mode</span></div>
-<pre><code>commit with a descriptive message and open a PR</code><button class="copy-btn">copy</button></pre></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="warn">
-    <span class="callout-icon">⚠️</span>
-    <div class="callout-body"><div class="callout-title">When to Skip Planning</div>Plan Mode adds overhead. For small tasks (fixing a typo, adding a log line, renaming a variable) — just ask Claude directly. Planning pays off when you're uncertain about the approach, the change touches multiple files, or you're unfamiliar with the code.</div>
-  </div>
-
-  <h2>Plan vs. Just Do It</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Use Plan Mode when…</th><th>Skip planning when…</th></tr></thead>
-    <tbody>
-      <tr><td>Uncertain about the approach</td><td>You could describe the diff in one sentence</td></tr>
-      <tr><td>Change modifies multiple files</td><td>The task is small and obvious</td></tr>
-      <tr><td>Unfamiliar with the code</td><td>You've done this exact thing before</td></tr>
-      <tr><td>Feature could be built several ways</td><td>It's a typo / rename / log line</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<!-- ── CONTEXT ─────────────────────────────────────────────── -->
-<section id="context">
-  <div class="hero">
-    <div class="hero-tag">📌 Core Practice #3</div>
-    <h1>Provide <em>Specific Context</em></h1>
-    <p class="lead">The more precise your instructions, the fewer corrections you'll need. Reference files, mention constraints, point to existing patterns.</p>
-  </div>
-
-  <h2>Prompting Strategies</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Strategy</th><th>❌ Vague</th><th>✅ Specific</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Scope the task</strong><br><small style="color:var(--muted)">File, scenario, test preferences</small></td><td><em class="before">"add tests for foo.py"</em></td><td><em class="after">"write a test for foo.py covering the edge case where the user is logged out. avoid mocks."</em></td></tr>
-      <tr><td><strong>Point to sources</strong><br><small style="color:var(--muted)">The authoritative source</small></td><td><em class="before">"why does ExecutionFactory have a weird api?"</em></td><td><em class="after">"look through ExecutionFactory's git history and summarize how its api came to be"</em></td></tr>
-      <tr><td><strong>Reference patterns</strong><br><small style="color:var(--muted)">Existing code to follow</small></td><td><em class="before">"add a calendar widget"</em></td><td><em class="after">"look at HotDogWidget.php to understand widget patterns, then build a calendar widget. no new libraries."</em></td></tr>
-      <tr><td><strong>Describe symptom</strong><br><small style="color:var(--muted)">Symptom + location + done criteria</small></td><td><em class="before">"fix the login bug"</em></td><td><em class="after">"users report login fails after session timeout. check src/auth/, especially token refresh. write a failing test, then fix."</em></td></tr>
-    </tbody>
-  </table></div>
-
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Vague prompts have a place</div>For exploration, vague is fine. "What would you improve in this file?" surfaces things you wouldn't have thought to ask. But for execution — be specific.</div>
-  </div>
-
-  <h2>Rich Content Types</h2>
-  <div class="cards">
-    <div class="card"><div class="card-icon">@</div><h4>@-reference files</h4><p>Use <code>@src/auth.ts</code> instead of describing where code lives. Claude reads the file before responding.</p></div>
-    <div class="card"><div class="card-icon">🖼</div><h4>Paste images</h4><p>Copy/paste or drag and drop screenshots directly into the prompt for UI work.</p></div>
-    <div class="card"><div class="card-icon">🔗</div><h4>Give URLs</h4><p>Paste documentation links. Use <code>/permissions</code> to allowlist frequently-used domains.</p></div>
-    <div class="card"><div class="card-icon">|</div><h4>Pipe data in</h4><p><code>cat error.log | claude</code> sends file contents directly to Claude via stdin.</p></div>
-  </div>
-</section>
-
-<!-- ── CLAUDE.MD ──────────────────────────────────────────── -->
-<section id="claudemd">
-  <div class="hero">
-    <div class="hero-tag">📄 Configuration</div>
-    <h1>Writing an Effective <em>CLAUDE.md</em></h1>
-    <p class="lead">Read at the <strong>start of every conversation</strong>. Gives Claude persistent context it can't infer from code alone.</p>
-  </div>
-
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Quick Start</div>Run <code>/init</code> to auto-generate a starter CLAUDE.md. It detects build systems, test frameworks, and code patterns — then refine over time.</div>
-  </div>
-
-  <h2>Example CLAUDE.md</h2>
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">CLAUDE.md</span></div>
-<pre><code># Code style
-- Use ES modules (import/export) syntax, not CommonJS (require)
-- Destructure imports when possible (eg. import { foo } from 'bar')
-
-# Workflow
-- Typecheck when you're done making a series of code changes
-- Prefer running single tests, not the whole suite, for performance
-
-# When compacting, always preserve:
-- The full list of modified files
-- Any test commands we've been running</code><button class="copy-btn">copy</button></pre></div>
-
-  <h2>Include vs. Exclude</h2>
-  <div class="donts">
-    <div class="do-box"><h5>✅ Include</h5><ul>
-      <li>Bash commands Claude can't guess</li>
-      <li>Code style rules that differ from defaults</li>
-      <li>Testing instructions and preferred test runners</li>
-      <li>Repository etiquette (branch naming, PR conventions)</li>
-      <li>Architectural decisions specific to your project</li>
-      <li>Developer environment quirks (required env vars)</li>
-      <li>Common gotchas or non-obvious behaviors</li>
-    </ul></div>
-    <div class="dont-box"><h5>❌ Exclude</h5><ul>
-      <li>Anything Claude can infer from reading code</li>
-      <li>Standard language conventions Claude knows</li>
-      <li>Detailed API docs (link instead)</li>
-      <li>Information that changes frequently</li>
-      <li>Long explanations or tutorials</li>
-      <li>File-by-file codebase descriptions</li>
-      <li>Self-evident rules like "write clean code"</li>
-    </ul></div>
-  </div>
-
-  <h2>Diagnosing CLAUDE.md Problems</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
-    <tbody>
-      <tr><td>Claude ignores rules</td><td>File too long — rules get lost</td><td>Prune ruthlessly. Convert rules to hooks.</td></tr>
-      <tr><td>Claude asks questions it should know</td><td>Phrasing is ambiguous</td><td>Rewrite for clarity. Test by observing behavior.</td></tr>
-      <tr><td>Rules followed inconsistently</td><td>Priority unclear</td><td>Add "IMPORTANT:" or "YOU MUST" emphasis.</td></tr>
-    </tbody>
-  </table></div>
-
-  <h2>File Locations</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Location</th><th>Scope</th><th>Use Case</th></tr></thead>
-    <tbody>
-      <tr><td><code>~/.claude/CLAUDE.md</code></td><td>All sessions</td><td>Personal preferences across all projects</td></tr>
-      <tr><td><code>./CLAUDE.md</code></td><td>Project</td><td>Team conventions — check into git</td></tr>
-      <tr><td><code>./parent/CLAUDE.md</code></td><td>Parent dirs</td><td>Monorepo shared rules</td></tr>
-      <tr><td><code>./child/CLAUDE.md</code></td><td>Subdirectory</td><td>Area-specific rules, loaded on demand</td></tr>
-    </tbody>
-  </table></div>
-
-  <div class="crit">
-    <span class="callout-icon">🚨</span>
-    <div class="callout-body"><div class="callout-title">Critical Warning</div>Bloated CLAUDE.md files cause Claude to ignore your actual instructions. Keep it under 200 lines. For each line ask: "Would removing this cause Claude to make mistakes?" If not, cut it.</div>
-  </div>
-</section>
-
-<!-- ── PERMISSIONS ─────────────────────────────────────────── -->
-<section id="permissions">
-  <div class="hero">
-    <div class="hero-tag">🔐 Configuration</div>
-    <h1>Configure <em>Permissions</em></h1>
-    <p class="lead">Reduce interruptions while staying in control. Three approaches — choose based on how much you trust the task.</p>
-  </div>
-
-  <div class="cards">
-    <div class="card"><div class="card-icon">🤖</div><h4>Auto Mode</h4><p>A classifier reviews commands and blocks only risky ones: scope escalation, unknown infrastructure, hostile-content actions. Best when you trust the direction.</p></div>
-    <div class="card"><div class="card-icon">📋</div><h4>Permission Allowlists</h4><p>Pre-permit specific safe tools: <code>npm run lint</code>, <code>git commit</code>. Use <code>/permissions</code> to manage.</p></div>
-    <div class="card"><div class="card-icon">📦</div><h4>Sandboxing</h4><p>OS-level isolation that restricts filesystem and network access. Claude works freely within defined boundaries.</p></div>
-  </div>
-
-  <h2>Permission Modes</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Mode</th><th>File Edits</th><th>Commands</th><th>Best For</th></tr></thead>
-    <tbody>
-      <tr><td><code>default</code></td><td>Ask</td><td>Ask</td><td>Interactive development</td></tr>
-      <tr><td><code>acceptEdits</code></td><td>Auto-approve</td><td>Ask</td><td>Trusted editing sessions</td></tr>
-      <tr><td><code>plan</code></td><td>Blocked</td><td>Ask</td><td>Research / analysis only</td></tr>
-      <tr><td><code>auto</code></td><td>Classifier</td><td>Classifier</td><td>Autonomous operation</td></tr>
-      <tr><td><code>bypassPermissions</code></td><td>Auto-approve</td><td>Auto-approve</td><td>Fully trusted environments</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<!-- ── TOOLS & MCP ─────────────────────────────────────────── -->
-<section id="tools">
-  <div class="hero">
-    <div class="hero-tag">🔧 Configuration</div>
-    <h1>CLI Tools, MCP & <em>Plugins</em></h1>
-    <p class="lead">Connect Claude to the external world: GitHub, databases, APIs, and third-party services.</p>
-  </div>
-
-  <h2>CLI Tools</h2>
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Tip</div>Use CLI tools like <code>gh</code>, <code>aws</code>, <code>gcloud</code>, <code>sentry-cli</code>. They're the most context-efficient way to interact with external services.</div>
-  </div>
-
-  <p>Claude is effective at learning unfamiliar CLIs:</p>
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div></div>
-<pre><code>Use 'foo-cli-tool --help' to learn about foo tool,
-then use it to solve A, B, C.</code><button class="copy-btn">copy</button></pre></div>
-
-  <h2>MCP Servers</h2>
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Tip</div>Run <code>claude mcp add</code> to connect external tools like Notion, Figma, or your database.</div>
-  </div>
-  <div class="cards">
-    <div class="card"><div class="card-icon">📋</div><h4>Issue trackers</h4><p>Implement features directly from Linear, Jira, or GitHub Issues.</p></div>
-    <div class="card"><div class="card-icon">🗄</div><h4>Databases</h4><p>Query your database, inspect schemas, generate migrations.</p></div>
-    <div class="card"><div class="card-icon">📊</div><h4>Monitoring</h4><p>Analyze logs and metrics from Grafana, Datadog, Sentry.</p></div>
-    <div class="card"><div class="card-icon">🎨</div><h4>Design tools</h4><p>Implement features directly from Figma designs.</p></div>
-  </div>
-
-  <h2>Plugins</h2>
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Tip</div>Run <code>/plugin</code> to browse the marketplace. Plugins bundle skills, hooks, subagents, and MCP servers into a single installable unit.</div>
-  </div>
-</section>
-
-<!-- ── HOOKS ──────────────────────────────────────────────── -->
-<section id="hooks">
-  <div class="hero">
-    <div class="hero-tag">⚡ Configuration</div>
-    <h1>Hooks — <em>Deterministic Automation</em></h1>
-    <p class="lead">Unlike CLAUDE.md instructions (advisory), hooks <strong>guarantee the action happens</strong> every time, with zero exceptions.</p>
-  </div>
-
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Tip</div>Use hooks for actions that must happen every time with zero exceptions. Claude can write hooks for you — just describe what you need.</div>
-  </div>
-
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div></div>
-<pre><code>"Write a hook that runs eslint after every file edit"
-"Write a hook that blocks writes to the migrations folder."</code><button class="copy-btn">copy</button></pre></div>
-
-  <h2>Hook Event Points</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Event</th><th>When it fires</th><th>Can block?</th><th>Common use</th></tr></thead>
-    <tbody>
-      <tr><td><code>PreToolUse</code></td><td>Before any tool executes</td><td>Yes</td><td>Block dangerous commands, validate inputs</td></tr>
-      <tr><td><code>PostToolUse</code></td><td>After tool succeeds</td><td>No</td><td>Auto-format, audit log, run linter</td></tr>
-      <tr><td><code>SessionStart</code></td><td>Session begins / after compaction</td><td>Yes</td><td>Re-inject critical context</td></tr>
-      <tr><td><code>UserPromptSubmit</code></td><td>When you submit a message</td><td>Yes</td><td>Inject dynamic context</td></tr>
-      <tr><td><code>Stop</code></td><td>Claude finishes responding</td><td>Yes</td><td>Verify completion criteria</td></tr>
-    </tbody>
-  </table></div>
-
-  <h2>CLAUDE.md vs. Hooks</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th></th><th>CLAUDE.md</th><th>Hooks</th></tr></thead>
-    <tbody>
-      <tr><td>Execution</td><td>Advisory — Claude may not follow</td><td>Deterministic — always runs</td></tr>
-      <tr><td>Can block actions</td><td>No</td><td>Yes (PreToolUse)</td></tr>
-      <tr><td>Best for</td><td>Conventions, style, project context</td><td>Mandatory automation</td></tr>
-      <tr><td>Example</td><td>"Use 2-space indentation"</td><td>"Run eslint after every edit"</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<!-- ── SKILLS & SUBAGENTS ─────────────────────────────────── -->
-<section id="skills">
-  <div class="hero">
-    <div class="hero-tag">🎯 Configuration</div>
-    <h1>Skills & <em>Custom Subagents</em></h1>
-    <p class="lead">Extend Claude with domain knowledge, reusable workflows, and isolated specialist agents.</p>
-  </div>
-
-  <h2>Skills</h2>
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Tip</div>Create <code>SKILL.md</code> files in <code>.claude/skills/</code>. Claude applies them automatically when relevant, or you invoke them with <code>/skill-name</code>.</div>
-  </div>
-
-  <h3>Domain Knowledge Skill</h3>
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">.claude/skills/api-conventions/SKILL.md</span></div>
-<pre><code>---
-name: api-conventions
-description: REST API design conventions for our services
----
-# API Conventions
-- Use kebab-case for URL paths
-- Use camelCase for JSON properties
-- Always include pagination for list endpoints
-- Version APIs in the URL path (/v1/, /v2/)</code><button class="copy-btn">copy</button></pre></div>
-
-  <h3>Repeatable Workflow Skill</h3>
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">.claude/skills/fix-issue/SKILL.md</span></div>
-<pre><code>---
-name: fix-issue
-description: Fix a GitHub issue
-disable-model-invocation: true
----
-Analyze and fix GitHub issue: $ARGUMENTS.
-
-1. Use `gh issue view` to get issue details
-2. Search codebase for relevant files
-3. Implement the necessary changes
-4. Write and run tests to verify
-5. Create a descriptive commit and open a PR</code><button class="copy-btn">copy</button></pre></div>
-  <p>Run <code>/fix-issue 1234</code> to invoke it. Use <code>disable-model-invocation: true</code> for workflows with side effects you want to trigger manually.</p>
-
-  <h2>Custom Subagents</h2>
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Tip</div>Subagents run in their own context with their own allowed tools — keeping your main conversation clean for implementation.</div>
-  </div>
-
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">.claude/agents/security-reviewer.md</span></div>
-<pre><code>---
-name: security-reviewer
-description: Reviews code for security vulnerabilities
-tools: Read, Grep, Glob, Bash
-model: opus
----
-You are a senior security engineer. Review code for:
-- Injection vulnerabilities (SQL, XSS, command injection)
-- Authentication and authorization flaws
-- Secrets or credentials in code
-- Insecure data handling
-
-Provide specific line references and suggested fixes.</code><button class="copy-btn">copy</button></pre></div>
-
-  <h2>Feature Comparison</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Feature</th><th>CLAUDE.md</th><th>Skills</th><th>Subagents</th><th>Hooks</th></tr></thead>
-    <tbody>
-      <tr><td>Load timing</td><td>Every session</td><td>On demand</td><td>On demand</td><td>On event</td></tr>
-      <tr><td>Context impact</td><td>Always present</td><td>Only when invoked</td><td>Isolated context</td><td>None</td></tr>
-      <tr><td>Best for</td><td>Broad project rules</td><td>Domain knowledge</td><td>Isolated tasks</td><td>Mandatory automation</td></tr>
-      <tr><td>User invokes?</td><td>No</td><td>Yes (<code>/name</code>)</td><td>Yes or auto</td><td>No (automatic)</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<!-- ── QUESTIONS ──────────────────────────────────────────── -->
-<section id="questions">
-  <div class="hero">
-    <div class="hero-tag">💬 Communication</div>
-    <h1>Ask Codebase <em>Questions</em></h1>
-    <p class="lead">Claude Code is an incredibly effective onboarding tool. Ask it the same questions you'd ask a senior engineer — no special prompting required.</p>
-  </div>
-
-  <div class="cards">
-    <div class="card"><div class="card-icon">📝</div><h4>How-to questions</h4><p>"How does logging work?" "How do I make a new API endpoint?"</p></div>
-    <div class="card"><div class="card-icon">🔎</div><h4>Code explanation</h4><p>"What does <code>async move { ... }</code> do on line 134 of foo.rs?"</p></div>
-    <div class="card"><div class="card-icon">🧩</div><h4>Edge case hunting</h4><p>"What edge cases does <code>CustomerOnboardingFlowImpl</code> handle?"</p></div>
-    <div class="card"><div class="card-icon">🤔</div><h4>Design archaeology</h4><p>"Why does this code call <code>foo()</code> instead of <code>bar()</code> on line 333?"</p></div>
-  </div>
-
-  <div class="info">
-    <span class="callout-icon">ℹ️</span>
-    <div class="callout-body"><div class="callout-title">Onboarding Workflow</div>This is an effective pattern for joining a new team: it improves ramp-up time and reduces load on other engineers. Ask questions directly — no special prompting needed.</div>
-  </div>
-</section>
-
-<!-- ── INTERVIEW ──────────────────────────────────────────── -->
-<section id="interview">
-  <div class="hero">
-    <div class="hero-tag">🎙 Communication</div>
-    <h1>Let Claude <em>Interview You</em></h1>
-    <p class="lead">For larger features, have Claude interview you first — it asks about things you might not have considered.</p>
-  </div>
-
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Tip</div>Start with a minimal prompt and ask Claude to interview you using the <code>AskUserQuestion</code> tool. Claude asks about technical implementation, UI/UX, edge cases, and tradeoffs.</div>
-  </div>
-
-  <h2>The Interview Prompt</h2>
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div></div>
-<pre><code>I want to build [brief description]. Interview me in detail
-using the AskUserQuestion tool.
-
-Ask about technical implementation, UI/UX, edge cases, concerns,
-and tradeoffs. Don't ask obvious questions, dig into the hard parts
-I might not have considered.
-
-Keep interviewing until we've covered everything, then write a
-complete spec to SPEC.md.</code><button class="copy-btn">copy</button></pre></div>
-
-  <div class="warn">
-    <span class="callout-icon">⚠️</span>
-    <div class="callout-body"><div class="callout-title">Start Fresh for Implementation</div>Once the spec is complete, start a <strong>fresh session</strong> to execute it. The new session has clean context focused entirely on implementation, and you have a written spec to reference.</div>
-  </div>
-
-  <div class="cards">
-    <div class="card"><div class="card-icon">🔭</div><h4>Surfaces blind spots</h4><p>Claude asks about things you wouldn't have thought to specify.</p></div>
-    <div class="card"><div class="card-icon">📋</div><h4>Produces a spec</h4><p>You get a complete written spec before any code is written.</p></div>
-    <div class="card"><div class="card-icon">🧹</div><h4>Clean implementation</h4><p>Start a fresh session — clean context, focused entirely on building.</p></div>
-  </div>
-</section>
-
-<!-- ── CORRECT ────────────────────────────────────────────── -->
-<section id="correct">
-  <div class="hero">
-    <div class="hero-tag">🔄 Session Management</div>
-    <h1>Course-Correct <em>Early and Often</em></h1>
-    <p class="lead">The best results come from tight feedback loops. Correct Claude as soon as you notice it going off track.</p>
-  </div>
-
-  <h2>Key Commands</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Action</th><th>Command</th><th>Effect</th></tr></thead>
-    <tbody>
-      <tr><td>Stop mid-action</td><td><kbd>Esc</kbd></td><td>Claude stops immediately. Context preserved. You can redirect.</td></tr>
-      <tr><td>Rewind</td><td><kbd>Esc</kbd><kbd>Esc</kbd> or <code>/rewind</code></td><td>Opens rewind menu: restore conversation, code, or both.</td></tr>
-      <tr><td>Undo changes</td><td><code>"Undo that"</code></td><td>Claude reverts its most recent changes.</td></tr>
-      <tr><td>Reset context</td><td><code>/clear</code></td><td>Resets context window entirely. Start fresh.</td></tr>
-    </tbody>
-  </table></div>
-
-  <div class="crit">
-    <span class="callout-icon">🚨</span>
-    <div class="callout-body"><div class="callout-title">The Two-Corrections Rule</div>If you've corrected Claude <strong>more than twice on the same issue</strong>, the context is polluted with failed approaches. Run <code>/clear</code> and start fresh with a better prompt. A clean session with a better prompt almost always wins.</div>
-  </div>
-
-  <div class="cards">
-    <div class="card"><div class="card-icon">🎯</div><h4>Tight feedback</h4><p>Correct immediately when you notice the wrong direction. Don't let Claude go far down a bad path.</p></div>
-    <div class="card"><div class="card-icon">🔁</div><h4>Try risky things</h4><p>Checkpoints persist across sessions. Tell Claude to try something speculative — if it fails, rewind and try differently.</p></div>
-  </div>
-</section>
-
-<!-- ── CTX MGMT ───────────────────────────────────────────── -->
-<section id="ctxmgmt">
-  <div class="hero">
-    <div class="hero-tag">🧹 Session Management</div>
-    <h1>Manage Context <em>Aggressively</em></h1>
-    <p class="lead">Context is your most precious resource. Every tool result, file read, and command output consumes it permanently (until compaction).</p>
-  </div>
-
-  <h2>Context Management Toolkit</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Tool</th><th>When to Use</th><th>Effect</th></tr></thead>
-    <tbody>
-      <tr><td><code>/clear</code></td><td>Between unrelated tasks</td><td>Resets context window entirely</td></tr>
-      <tr><td><code>/compact</code></td><td>Context is filling up</td><td>Summarizes; keeps what matters most</td></tr>
-      <tr><td><code>/compact Focus on X</code></td><td>Need control over what survives</td><td>Directs summarization toward your topic</td></tr>
-      <tr><td><code>/btw</code></td><td>Quick question you don't need to keep</td><td>Answer in overlay — never enters conversation history</td></tr>
-      <tr><td>Subagents</td><td>Verbose investigation tasks</td><td>Run in separate context; only summary returns</td></tr>
-    </tbody>
-  </table></div>
-
-  <h2>Subagents for Investigation</h2>
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Tip</div>Delegate research with <code>"use subagents to investigate X"</code>. They explore in separate contexts, keeping your main conversation clean for implementation.</div>
-  </div>
-
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div></div>
-<pre><code>Use subagents to investigate how our authentication system handles
-token refresh, and whether we have any existing OAuth utilities I
-should reuse.</code><button class="copy-btn">copy</button></pre></div>
-
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div></div>
-<pre><code>use a subagent to review this code for edge cases</code><button class="copy-btn">copy</button></pre></div>
-
-  <h2>Context Cost: Subagent vs. Main</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th></th><th>Without Subagent</th><th>With Subagent</th></tr></thead>
-    <tbody>
-      <tr><td>Files read</td><td>Stay in main context forever</td><td>Stay in subagent context</td></tr>
-      <tr><td>Context impact</td><td>+50K tokens</td><td>+1K tokens (summary only)</td></tr>
-      <tr><td>Per-turn cost</td><td>Processing 150K+ tokens</td><td>Processing ~50K tokens</td></tr>
-      <tr><td>Quality</td><td>Degrades as context fills</td><td>Stays high — focused context</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<!-- ── CHECKPOINTS ────────────────────────────────────────── -->
-<section id="checkpoints">
-  <div class="hero">
-    <div class="hero-tag">💾 Session Management</div>
-    <h1>Checkpoints & <em>Session Resume</em></h1>
-    <p class="lead">Every action Claude makes creates a checkpoint. Conversations persist locally. Use this to your advantage.</p>
-  </div>
-
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Tip</div>Double-tap <kbd>Esc</kbd> or run <code>/rewind</code> to open the rewind menu. Checkpoints persist across sessions — close your terminal and still rewind later.</div>
-  </div>
-
-  <h2>Rewind Options</h2>
-  <div class="cards">
-    <div class="card"><div class="card-icon">💬</div><h4>Conversation only</h4><p>Go back to a previous conversation state without touching code.</p></div>
-    <div class="card"><div class="card-icon">📝</div><h4>Code only</h4><p>Revert files without losing conversation context.</p></div>
-    <div class="card"><div class="card-icon">🔄</div><h4>Both</h4><p>Full rollback to any previous state.</p></div>
-    <div class="card"><div class="card-icon">📋</div><h4>Summarize from here</h4><p>Condense context from a selected message forward.</p></div>
-  </div>
-
-  <div class="crit">
-    <span class="callout-icon">🚨</span>
-    <div class="callout-body"><div class="callout-title">Not a Replacement for Git</div>Checkpoints only track changes made <em>by Claude</em>, not external processes. Always commit real work to git.</div>
-  </div>
-
-  <h2>Resume Conversations</h2>
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">bash</span></div>
-<pre><code>claude --continue    # Resume the most recent conversation
-claude --resume      # Select from recent conversations</code><button class="copy-btn">copy</button></pre></div>
-
-  <div class="tip">
-    <span class="callout-icon">💡</span>
-    <div class="callout-body"><div class="callout-title">Name Your Sessions</div>Use <code>/rename</code> to give sessions descriptive names like <code>oauth-migration</code> or <code>debugging-memory-leak</code>. Treat sessions like branches — different workstreams get separate, persistent contexts.</div>
-  </div>
-</section>
-
-<!-- ── NON-INTERACTIVE ─────────────────────────────────────── -->
-<section id="noninteractive">
-  <div class="hero">
-    <div class="hero-tag">⚙ Automation</div>
-    <h1>Non-Interactive <em>Mode</em></h1>
-    <p class="lead">Run Claude in CI pipelines, pre-commit hooks, and automated workflows with <code>claude -p</code>.</p>
-  </div>
-
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">bash</span></div>
-<pre><code># One-off query
-claude -p "Explain what this project does"
-
-# Structured output for scripts
-claude -p "List all API endpoints" --output-format json
-
-# Streaming for real-time processing
-claude -p "Analyze this log file" --output-format stream-json
-
-# Fully autonomous
-claude --permission-mode auto -p "fix all lint errors"
-
-# Pipe data in
-cat error.log | claude -p "What caused these errors?"</code><button class="copy-btn">copy</button></pre></div>
-
-  <h2>Output Formats</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Format</th><th>Use Case</th></tr></thead>
-    <tbody>
-      <tr><td><code>text</code> (default)</td><td>Human-readable output</td></tr>
-      <tr><td><code>json</code></td><td>Parse results programmatically in scripts</td></tr>
-      <tr><td><code>stream-json</code></td><td>Real-time processing of long-running outputs</td></tr>
-    </tbody>
-  </table></div>
-
-  <div class="warn">
-    <span class="callout-icon">⚠️</span>
-    <div class="callout-body"><div class="callout-title">Debug vs. Production</div>Use <code>--verbose</code> for debugging during development. Turn it off in production to reduce noise.</div>
-  </div>
-</section>
-
-<!-- ── PARALLEL ───────────────────────────────────────────── -->
-<section id="parallel">
-  <div class="hero">
-    <div class="hero-tag">⚡ Automation</div>
-    <h1>Parallel <em>Sessions</em></h1>
-    <p class="lead">Multiply your output by running multiple Claude sessions simultaneously — for parallel work and quality-focused workflows.</p>
-  </div>
-
-  <div class="cards">
-    <div class="card"><div class="card-icon">🖥</div><h4>Desktop App</h4><p>Manage multiple local sessions visually. Each gets its own isolated git worktree.</p></div>
-    <div class="card"><div class="card-icon">☁</div><h4>Web (cloud)</h4><p>Run on Anthropic's cloud infrastructure in isolated VMs. No local setup needed.</p></div>
-    <div class="card"><div class="card-icon">👥</div><h4>Agent Teams</h4><p>Automated coordination of multiple sessions with shared tasks and a team lead.</p></div>
-  </div>
-
-  <h2>Writer / Reviewer Pattern</h2>
-  <p>A fresh context improves review quality — Session B won't be biased toward code it didn't write:</p>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Session A (Writer)</th><th>Session B (Reviewer)</th></tr></thead>
-    <tbody>
-      <tr><td><em>"Implement a rate limiter for our API"</em></td><td></td></tr>
-      <tr><td></td><td><em>"Review @src/middleware/rateLimiter.ts. Look for edge cases, race conditions, and consistency with existing middleware."</em></td></tr>
-      <tr><td><em>"Here's the review: [Session B output]. Address these issues."</em></td><td></td></tr>
-    </tbody>
-  </table></div>
-
-  <h2>Writer / Tester Pattern</h2>
-  <p>One Claude writes tests, another writes code to pass them — enforces TDD naturally:</p>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Session A (Test Writer)</th><th>Session B (Implementer)</th></tr></thead>
-    <tbody>
-      <tr><td><em>"Write comprehensive tests for a rate limiter. Define the interface first."</em></td><td></td></tr>
-      <tr><td></td><td><em>"Implement a rate limiter that passes these tests: @tests/rateLimiter.test.ts"</em></td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<!-- ── FAN-OUT ─────────────────────────────────────────────── -->
-<section id="fanout">
-  <div class="hero">
-    <div class="hero-tag">📡 Automation</div>
-    <h1>Fan-Out <em>Patterns</em></h1>
-    <p class="lead">Distribute work across many parallel Claude invocations for large-scale migrations, analyses, or transformations.</p>
-  </div>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <h4>Generate a task list</h4>
-        <p>Have Claude list all files that need changing.</p>
-        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">bash</span></div>
-<pre><code>claude -p "list all Python files that import the old logger" \
-  --output-format json > files.txt</code><button class="copy-btn">copy</button></pre></div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <h4>Script the loop</h4>
-        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">bash</span></div>
-<pre><code>for file in $(cat files.txt); do
-  claude -p "Migrate $file from old_logger to new_logger.
-             Return OK or FAIL." \
-    --allowedTools "Edit,Bash(git commit *)"
-done</code><button class="copy-btn">copy</button></pre></div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <h4>Test on a few, then scale</h4>
-        <p>Refine your prompt based on the first 2-3 files. The <code>--allowedTools</code> flag restricts what Claude can do — essential for unattended runs.</p>
-      </div>
-    </div>
-  </div>
-
-  <h2>Pipeline Integration</h2>
-  <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div><span class="code-lang">bash</span></div>
-<pre><code>claude -p "&lt;your prompt&gt;" --output-format json | your_command</code><button class="copy-btn">copy</button></pre></div>
-
-  <div class="warn">
-    <span class="callout-icon">⚠️</span>
-    <div class="callout-body"><div class="callout-title">Auto Mode in Headless Runs</div>For <code>-p</code> flag, auto mode <strong>aborts if the classifier repeatedly blocks</strong> — there's no user to fall back to. Design prompts to avoid scope escalation.</div>
-  </div>
-</section>
-
-<!-- ── FAILURES ───────────────────────────────────────────── -->
-<section id="failures">
-  <div class="hero">
-    <div class="hero-tag">🚫 Mastery</div>
-    <h1>Avoid Common <em>Failure Patterns</em></h1>
-    <p class="lead">Recognize these time-wasting anti-patterns early. Each has a fast fix.</p>
-  </div>
-
-  <div class="pattern">
-    <h4>🗑 The Kitchen Sink Session</h4>
-    <div class="p-problem">❌ You start with one task, ask Claude something unrelated, then go back to the first. Context full of irrelevant information.</div>
-    <div class="p-fix">✅ Fix: <code>/clear</code> between unrelated tasks.</div>
-  </div>
-  <div class="pattern">
-    <h4>🔁 Correcting Over and Over</h4>
-    <div class="p-problem">❌ Claude does something wrong, you correct it, still wrong, you correct again. Context polluted with failed approaches.</div>
-    <div class="p-fix">✅ Fix: After two failed corrections, <code>/clear</code> and write a better initial prompt incorporating what you learned.</div>
-  </div>
-  <div class="pattern">
-    <h4>📜 The Over-Specified CLAUDE.md</h4>
-    <div class="p-problem">❌ CLAUDE.md is too long. Claude ignores half of it because important rules get lost in noise.</div>
-    <div class="p-fix">✅ Fix: Ruthlessly prune. If Claude already does it correctly without the instruction, delete it or convert to a hook.</div>
-  </div>
-  <div class="pattern">
-    <h4>🤷 The Trust-Then-Verify Gap</h4>
-    <div class="p-problem">❌ Claude produces plausible-looking code that doesn't handle edge cases. You shipped it without verifying.</div>
-    <div class="p-fix">✅ Fix: Always provide verification (tests, scripts, screenshots). If you can't verify it, don't ship it.</div>
-  </div>
-  <div class="pattern">
-    <h4>🌊 The Infinite Exploration</h4>
-    <div class="p-problem">❌ You ask Claude to "investigate" without scoping it. Claude reads hundreds of files, filling the context.</div>
-    <div class="p-fix">✅ Fix: Scope investigations narrowly, or use subagents so exploration doesn't consume your main context.</div>
-  </div>
-
-  <h2>Quick Reference</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Symptom</th><th>Root Cause</th><th>Fix</th></tr></thead>
-    <tbody>
-      <tr><td>Claude ignores earlier instructions</td><td>Context too full or polluted</td><td><code>/clear</code> and restart</td></tr>
-      <tr><td>Claude repeats the same mistake</td><td>Previous failures in context</td><td><code>/clear</code>, write better initial prompt</td></tr>
-      <tr><td>Claude ignores CLAUDE.md rules</td><td>File too long</td><td>Prune to &lt;200 lines</td></tr>
-      <tr><td>Wrong files modified</td><td>Vague prompt</td><td>Name specific files and functions</td></tr>
-      <tr><td>Code has edge case bugs</td><td>No verification criteria</td><td>Add tests, acceptance criteria</td></tr>
-      <tr><td>Context fills up fast</td><td>Large unscoped investigations</td><td>Use subagents for exploration</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<!-- ── INTUITION ──────────────────────────────────────────── -->
-<section id="intuition">
-  <div class="hero">
-    <div class="hero-tag">🧠 Mastery</div>
-    <h1>Develop Your <em>Intuition</em></h1>
-    <p class="lead">The patterns in this guide are starting points. Over time, you'll develop intuition that no guide can capture.</p>
-  </div>
-
-  <p>Sometimes you <em>should</em> let context accumulate — when you're deep in one complex problem and the history is valuable. Sometimes skip planning because the task is exploratory. Sometimes a vague prompt is exactly right because you want to see how Claude interprets the problem before constraining it.</p>
-
-  <div class="info">
-    <span class="callout-icon">ℹ️</span>
-    <div class="callout-body"><div class="callout-title">The Meta-Pattern</div>Pay attention to what works. When Claude produces great output, notice what you did: the prompt structure, the context you provided, the mode you were in. When Claude struggles, ask why. Over time, you'll know when to be specific and when to be open-ended.</div>
-  </div>
-
-  <h2>Build Your Mental Model</h2>
-  <div class="cards">
-    <div class="card"><div class="card-icon">✨</div><h4>When Claude succeeds</h4><p>Notice what you did: prompt structure, context provided, mode. Add those patterns to CLAUDE.md.</p></div>
-    <div class="card"><div class="card-icon">🔍</div><h4>When Claude struggles</h4><p>Ask why. Context noisy? Prompt vague? Task too big for one pass?</p></div>
-    <div class="card"><div class="card-icon">🧪</div><h4>Experiment freely</h4><p>Try risky approaches. Checkpoints let you undo. Exploration is cheap when you can rewind.</p></div>
-    <div class="card"><div class="card-icon">📈</div><h4>CLAUDE.md compounds</h4><p>Every lesson learned added to CLAUDE.md pays dividends in every future session.</p></div>
-  </div>
-
-  <h2>Related Resources</h2>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Resource</th><th>What You'll Learn</th></tr></thead>
-    <tbody>
-      <tr><td><a href="https://code.claude.com/docs/en/how-claude-code-works" target="_blank">How Claude Code Works ↗</a></td><td>The agentic loop, tools, and context management</td></tr>
-      <tr><td><a href="https://code.claude.com/docs/en/features-overview" target="_blank">Extend Claude Code ↗</a></td><td>Skills, hooks, MCP, subagents, and plugins</td></tr>
-      <tr><td><a href="https://code.claude.com/docs/en/common-workflows" target="_blank">Common Workflows ↗</a></td><td>Step-by-step recipes for debugging, testing, PRs</td></tr>
-      <tr><td><a href="https://code.claude.com/docs/en/memory" target="_blank">CLAUDE.md Reference ↗</a></td><td>Store project conventions and persistent context</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-</main>
 </div>
 
-<!-- Scroll to top -->
-<button id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<div id="crosshair">
+  <div class="ch-line ch-top"></div>
+  <div class="ch-line ch-bottom"></div>
+  <div class="ch-line ch-left"></div>
+  <div class="ch-line ch-right"></div>
+</div>
 
+<div id="hud">
+  <div id="armor-bar-container">
+    <div id="armor-bar"><div id="armor-fill"></div></div>
+    <span id="armor-text">100</span>
+  </div>
+  <div id="health-bar-container">
+    <span id="health-text">100</span>
+    <div id="health-bar"><div id="health-fill"></div></div>
+  </div>
+</div>
+
+<div id="ammo-display">
+  <span id="ammo-current">30</span> / <span class="ammo-reserve" id="ammo-reserve">90</span>
+</div>
+<div id="weapon-name">AK-47</div>
+<div id="weapon-switch">1 - AK-47 &nbsp; 2 - Pistol</div>
+
+<div id="score-display">
+  <div>KILLS: <span id="kills">0</span></div>
+  <div>DEATHS: <span id="deaths">0</span></div>
+  <div>ROUND: <span id="round">1</span></div>
+</div>
+
+<div id="kill-feed"></div>
+<div id="round-display"></div>
+<div id="damage-overlay"></div>
+
+<div id="hit-marker">
+  <div class="hm-line hm-1"></div>
+  <div class="hm-line hm-2"></div>
+  <div class="hm-line hm-3"></div>
+  <div class="hm-line hm-4"></div>
+</div>
+
+<canvas id="minimap" width="150" height="150"></canvas>
+
+<div id="death-screen">
+  <h2>YOU DIED</h2>
+  <p>Respawning in 3 seconds...</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ── NAVIGATION ──────────────────────────────────────────────
-function show(id, el) {
-  document.querySelectorAll('.content > section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
-  const sec = document.getElementById(id);
-  if (sec) sec.classList.add('active');
-  if (el && el.classList) el.classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+// ============================================================
+//  COUNTER-OPS — A CS-Style FPS
+// ============================================================
+
+// --- AUDIO ENGINE (Web Audio API) ---
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+
+function initAudio() {
+  audioCtx = new AudioCtx();
 }
 
-// ── THEME ───────────────────────────────────────────────────
-function setTheme(t) {
-  document.documentElement.dataset.theme = t;
-  document.getElementById('themeSelect').value = t;
-  document.querySelectorAll('.dot').forEach(d => {
-    d.classList.toggle('active-dot', d.dataset.t === t);
-  });
-  localStorage.setItem('cc-bp-theme', t);
-}
+function playSound(type) {
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+  const g = audioCtx.createGain();
+  g.connect(audioCtx.destination);
 
-document.getElementById('themeDots').addEventListener('click', e => {
-  const dot = e.target.closest('.dot');
-  if (dot) setTheme(dot.dataset.t);
-});
-
-// Restore saved theme
-const saved = localStorage.getItem('cc-bp-theme');
-if (saved) setTheme(saved);
-
-// ── PROGRESS BAR ────────────────────────────────────────────
-window.addEventListener('scroll', () => {
-  const h = document.documentElement.scrollHeight - window.innerHeight;
-  document.getElementById('pbar').style.width = h > 0 ? (window.scrollY / h * 100) + '%' : '0';
-  document.getElementById('scrolltop').classList.toggle('show', window.scrollY > 400);
-}, { passive: true });
-
-// ── COPY BUTTONS ────────────────────────────────────────────
-document.querySelectorAll('pre').forEach(pre => {
-  if (pre.querySelector('.copy-btn')) return;
-  const btn = document.createElement('button');
-  btn.className = 'copy-btn'; btn.textContent = 'copy';
-  btn.onclick = () => {
-    navigator.clipboard.writeText(pre.querySelector('code')?.textContent || pre.textContent);
-    btn.textContent = '✓ copied';
-    setTimeout(() => btn.textContent = 'copy', 1800);
-  };
-  pre.appendChild(btn);
-});
-
-// ── KEYBOARD NAVIGATION ──────────────────────────────────────
-const sections = [
-  'intro','verify','explore','context','claudemd','permissions',
-  'tools','hooks','skills','questions','interview','correct','ctxmgmt',
-  'checkpoints','noninteractive','parallel','fanout','failures','intuition'
-];
-document.addEventListener('keydown', e => {
-  if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
-  const active = document.querySelector('.content > section.active')?.id;
-  const idx = sections.indexOf(active);
-  let next = -1;
-  if (e.key === 'ArrowDown' && idx < sections.length - 1) next = idx + 1;
-  if (e.key === 'ArrowUp' && idx > 0) next = idx - 1;
-  if (next >= 0) {
-    e.preventDefault();
-    const id = sections[next];
-    const navLink = [...document.querySelectorAll('.nav a')].find(a => a.getAttribute('onclick')?.includes(`'${id}'`));
-    show(id, navLink);
+  if (type === 'shoot') {
+    const o = audioCtx.createOscillator();
+    const n = audioCtx.createBufferSource();
+    const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.1, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 3);
+    n.buffer = buf;
+    n.connect(g);
+    g.gain.setValueAtTime(0.3, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    n.start(now);
+    n.stop(now + 0.1);
+  } else if (type === 'pistol') {
+    const n = audioCtx.createBufferSource();
+    const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.08, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 5);
+    n.buffer = buf;
+    n.connect(g);
+    g.gain.setValueAtTime(0.2, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    n.start(now);
+    n.stop(now + 0.08);
+  } else if (type === 'hit') {
+    const o = audioCtx.createOscillator();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(800, now);
+    o.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+    o.connect(g);
+    g.gain.setValueAtTime(0.15, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    o.start(now);
+    o.stop(now + 0.1);
+  } else if (type === 'kill') {
+    const o = audioCtx.createOscillator();
+    o.type = 'square';
+    o.frequency.setValueAtTime(600, now);
+    o.frequency.setValueAtTime(800, now + 0.05);
+    o.connect(g);
+    g.gain.setValueAtTime(0.12, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    o.start(now);
+    o.stop(now + 0.15);
+  } else if (type === 'reload') {
+    const o = audioCtx.createOscillator();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(300, now);
+    o.frequency.setValueAtTime(500, now + 0.1);
+    o.frequency.setValueAtTime(300, now + 0.2);
+    o.connect(g);
+    g.gain.setValueAtTime(0.1, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    o.start(now);
+    o.stop(now + 0.3);
+  } else if (type === 'damage') {
+    const n = audioCtx.createBufferSource();
+    const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.15, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * 0.5;
+    n.buffer = buf;
+    n.connect(g);
+    g.gain.setValueAtTime(0.2, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    n.start(now);
+    n.stop(now + 0.15);
+  } else if (type === 'step') {
+    const n = audioCtx.createBufferSource();
+    const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.05, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * 0.2 * Math.pow(1 - i / d.length, 2);
+    n.buffer = buf;
+    n.connect(g);
+    g.gain.setValueAtTime(0.05, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+    n.start(now);
+    n.stop(now + 0.05);
   }
+}
+
+// --- SCENE SETUP ---
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x4a85c5);
+scene.fog = new THREE.FogExp2(0x87aed6, 0.007);
+
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 500);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+document.body.appendChild(renderer.domElement);
+
+// Lighting
+const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x8B7355, 0.5);
+scene.add(hemiLight);
+
+const dirLight = new THREE.DirectionalLight(0xFFF8E0, 1.1);
+dirLight.position.set(50, 80, 30);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.width = 2048;
+dirLight.shadow.mapSize.height = 2048;
+dirLight.shadow.camera.near = 0.5;
+dirLight.shadow.camera.far = 200;
+dirLight.shadow.camera.left = -80;
+dirLight.shadow.camera.right = 80;
+dirLight.shadow.camera.top = 80;
+dirLight.shadow.camera.bottom = -80;
+scene.add(dirLight);
+
+// Fill light (sky bounce)
+const fillLight = new THREE.DirectionalLight(0xC0D8FF, 0.3);
+fillLight.position.set(-30, 20, -40);
+scene.add(fillLight);
+
+// --- TEXTURES ---
+function createTexture(width, height, drawFn) {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  drawFn(ctx, width, height);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  return tex;
+}
+
+const groundTex = createTexture(512, 512, (ctx, w, h) => {
+  ctx.fillStyle = '#5A5A50';
+  ctx.fillRect(0, 0, w, h);
+  for (let i = 0; i < 14000; i++) {
+    const g = 65 + Math.random() * 55;
+    ctx.fillStyle = `rgba(${g},${g},${g-5},0.35)`;
+    ctx.fillRect(Math.random()*w, Math.random()*h, Math.random()*3+1, Math.random()*3+1);
+  }
+  // Subtle cracks
+  ctx.strokeStyle = 'rgba(20,20,20,0.22)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 14; i++) {
+    ctx.beginPath();
+    let cx = Math.random()*w, cy = Math.random()*h;
+    ctx.moveTo(cx, cy);
+    for (let j = 0; j < 5; j++) {
+      cx += (Math.random()-0.5)*38;
+      cy += (Math.random()-0.5)*38;
+      ctx.lineTo(cx, cy);
+    }
+    ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+  ctx.lineWidth = 2;
+  for (let x = 0; x <= w; x += 64) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+  for (let y = 0; y <= h; y += 64) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+});
+groundTex.repeat.set(24, 24);
+
+const wallTex = createTexture(256, 256, (ctx, w, h) => {
+  ctx.fillStyle = '#9A8272';
+  ctx.fillRect(0, 0, w, h);
+  const bH = 24, bW = 56;
+  for (let row = 0; row * bH < h; row++) {
+    const off = (row % 2) * (bW / 2);
+    for (let col = -1; col * bW < w + bW; col++) {
+      const bx = col * bW + off;
+      const by = row * bH;
+      const r = Math.round(155 + Math.random()*35);
+      const g = Math.round(115 + Math.random()*30);
+      const b = Math.round(85 + Math.random()*25);
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.fillRect(bx + 2, by + 2, bW - 4, bH - 4);
+    }
+  }
+  for (let i = 0; i < 1200; i++) {
+    ctx.fillStyle = `rgba(0,0,0,${Math.random()*0.07})`;
+    ctx.fillRect(Math.random()*w, Math.random()*h, 2, 2);
+  }
+});
+
+const crateTex = createTexture(256, 256, (ctx, w, h) => {
+  ctx.fillStyle = '#7A5C18';
+  ctx.fillRect(0, 0, w, h);
+  for (let i = 0; i < 28; i++) {
+    ctx.strokeStyle = `rgba(${50+Math.random()*50},${30+Math.random()*30},${5+Math.random()*15},0.28)`;
+    ctx.lineWidth = 1 + Math.random();
+    ctx.beginPath();
+    const sy = Math.random()*h;
+    ctx.moveTo(0, sy);
+    ctx.bezierCurveTo(w*0.33, sy+(Math.random()-0.5)*22, w*0.66, sy+(Math.random()-0.5)*22, w, sy+(Math.random()-0.5)*16);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = '#3A2A08';
+  ctx.lineWidth = 8;
+  ctx.strokeRect(4, 4, w-8, h-8);
+  ctx.strokeStyle = '#5A3E0A';
+  ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(4,4); ctx.lineTo(w-4,h-4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w-4,4); ctx.lineTo(4,h-4); ctx.stroke();
+  ctx.strokeRect(20, 20, w-40, h-40);
+});
+
+// --- MAP BUILDING ---
+const mapWalls = []; // collision boxes
+const MAP_SIZE = 80;
+
+// Ground
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(MAP_SIZE * 2, MAP_SIZE * 2),
+  new THREE.MeshStandardMaterial({ map: groundTex, roughness: 0.95, metalness: 0.0 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// Wall builder
+function addWall(x, z, w, h, d, color) {
+  const mat = new THREE.MeshStandardMaterial({ map: wallTex, color: color || 0xccbbaa, roughness: 0.88, metalness: 0.0 });
+  const geo = new THREE.BoxGeometry(w, h, d);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(x, h / 2, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+  mapWalls.push({ mesh, x, z, hw: w/2, hd: d/2, h });
+  return mesh;
+}
+
+function addCrate(x, z, size) {
+  size = size || 2;
+  const mat = new THREE.MeshStandardMaterial({ map: crateTex, roughness: 0.75, metalness: 0.05 });
+  const geo = new THREE.BoxGeometry(size, size, size);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(x, size / 2, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+  mapWalls.push({ mesh, x, z, hw: size/2, hd: size/2, h: size });
+  return mesh;
+}
+
+// Boundary walls
+addWall(0, -MAP_SIZE, MAP_SIZE*2, 8, 2, 0xaa9988);
+addWall(0, MAP_SIZE, MAP_SIZE*2, 8, 2, 0xaa9988);
+addWall(-MAP_SIZE, 0, 2, 8, MAP_SIZE*2, 0xaa9988);
+addWall(MAP_SIZE, 0, 2, 8, MAP_SIZE*2, 0xaa9988);
+
+// --- CS-style map layout ---
+// Center building
+addWall(0, 0, 16, 6, 2);
+addWall(0, -8, 16, 6, 2);
+addWall(-7, -4, 2, 6, 10);
+addWall(7, -4, 2, 6, 10);
+
+// A Site area
+addWall(-30, -30, 20, 5, 2);
+addWall(-40, -20, 2, 5, 22);
+addWall(-20, -20, 2, 5, 22);
+addCrate(-30, -25, 2.5);
+addCrate(-27, -25, 2.5);
+addCrate(-28.5, -25, 2.5);
+addCrate(-30, -22, 2);
+
+// B Site area
+addWall(30, 30, 20, 5, 2);
+addWall(20, 20, 2, 5, 22);
+addWall(40, 20, 2, 5, 22);
+addCrate(30, 25, 2.5);
+addCrate(33, 25, 2.5);
+addCrate(31.5, 27.5, 2.5);
+
+// Mid corridors
+addWall(-5, -25, 2, 5, 20);
+addWall(5, -25, 2, 5, 20);
+addWall(-5, 25, 2, 5, 20);
+addWall(5, 25, 2, 5, 20);
+
+// Side buildings
+addWall(-40, 10, 12, 5, 2);
+addWall(-40, 0, 12, 5, 2);
+addWall(-46, 5, 2, 5, 12);
+addWall(-34, 3, 2, 5, 6);
+
+addWall(40, -10, 12, 5, 2);
+addWall(40, 0, 12, 5, 2);
+addWall(46, -5, 2, 5, 12);
+addWall(34, -3, 2, 5, 6);
+
+// Cover crates scattered around
+addCrate(-15, 15, 2);
+addCrate(-15, 17, 2);
+addCrate(15, -15, 2);
+addCrate(15, -17, 2);
+addCrate(0, 40, 3);
+addCrate(0, -40, 3);
+addCrate(-50, -50, 2);
+addCrate(50, 50, 2);
+addCrate(-50, 50, 2);
+addCrate(50, -50, 2);
+addCrate(25, 0, 2);
+addCrate(-25, 0, 2);
+addCrate(10, 10, 1.5);
+addCrate(-10, -10, 1.5);
+
+// Additional structures
+addWall(-55, -40, 8, 4, 8, 0xbbaa99);
+addWall(55, 40, 8, 4, 8, 0xbbaa99);
+addWall(-55, 40, 10, 4, 2, 0xbbaa99);
+addWall(55, -40, 10, 4, 2, 0xbbaa99);
+
+// Ramps / elevated positions
+const rampGeo = new THREE.BoxGeometry(6, 0.5, 6);
+const rampMat = new THREE.MeshStandardMaterial({ color: 0x888877, roughness: 0.9, metalness: 0.0 });
+const ramp1 = new THREE.Mesh(rampGeo, rampMat);
+ramp1.position.set(-30, 0.25, 10);
+ramp1.receiveShadow = true;
+scene.add(ramp1);
+
+const ramp2 = new THREE.Mesh(rampGeo, rampMat);
+ramp2.position.set(30, 0.25, -10);
+ramp2.receiveShadow = true;
+scene.add(ramp2);
+
+// --- ENVIRONMENT DECORATION ---
+
+// Outer grass ground
+const outerGround = new THREE.Mesh(
+  new THREE.PlaneGeometry(700, 700),
+  new THREE.MeshStandardMaterial({ color: 0x4A6030, roughness: 1.0 })
+);
+outerGround.rotation.x = -Math.PI / 2;
+outerGround.position.y = -0.05;
+outerGround.receiveShadow = true;
+scene.add(outerGround);
+
+// Trees
+function addTree(x, z) {
+  const trunkMat = new THREE.MeshStandardMaterial({ color: 0x4A2E08, roughness: 0.95 });
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.22, 2.6, 8), trunkMat);
+  trunk.position.set(x, 1.3, z); trunk.castShadow = true; scene.add(trunk);
+  const lMat1 = new THREE.MeshStandardMaterial({ color: 0x2D5A1B, roughness: 0.9 });
+  const lMat2 = new THREE.MeshStandardMaterial({ color: 0x3A6E25, roughness: 0.9 });
+  const f1 = new THREE.Mesh(new THREE.ConeGeometry(1.8, 2.2, 8), lMat1);
+  f1.position.set(x, 3.6, z); f1.castShadow = true; scene.add(f1);
+  const f2 = new THREE.Mesh(new THREE.ConeGeometry(1.35, 1.9, 8), lMat2);
+  f2.position.set(x, 4.9, z); f2.castShadow = true; scene.add(f2);
+  const f3 = new THREE.Mesh(new THREE.ConeGeometry(0.95, 1.7, 8), lMat1);
+  f3.position.set(x, 6.1, z); scene.add(f3);
+}
+addTree(-65, -65); addTree(65, 65); addTree(-65, 65); addTree(65, -65);
+addTree(-72, 0);   addTree(72, 0);  addTree(0, -72);  addTree(0, 72);
+addTree(-58, 32);  addTree(58, -32); addTree(-32, 72); addTree(32, -72);
+addTree(-75, -30); addTree(75, 30); addTree(-48, -72); addTree(48, 72);
+
+// Distant mountains
+const mtnMat = new THREE.MeshStandardMaterial({ color: 0x556040, roughness: 1.0 });
+const mtnMat2 = new THREE.MeshStandardMaterial({ color: 0x4A5535, roughness: 1.0 });
+[[-110,12,-80,18,25,mtnMat],[100,15,-90,22,30,mtnMat2],[0,10,-120,15,20,mtnMat],
+ [-90,14,90,20,28,mtnMat2],[110,11,80,16,22,mtnMat],[-120,8,20,12,18,mtnMat2],
+ [120,9,-20,14,19,mtnMat]].forEach(([mx,my,mz,r,h,mat]) => {
+  const m = new THREE.Mesh(new THREE.ConeGeometry(r,h,7), mat);
+  m.position.set(mx, my, mz); scene.add(m);
+});
+
+// Street lights
+function addPole(x, z) {
+  const poleMat = new THREE.MeshStandardMaterial({ color: 0x404040, metalness: 0.65, roughness: 0.4 });
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.075, 5.2, 8), poleMat);
+  pole.position.set(x, 2.6, z); pole.castShadow = true; scene.add(pole);
+  const arm = new THREE.Mesh(new THREE.BoxGeometry(0.048, 0.048, 1.3), poleMat);
+  arm.position.set(x, 5.3, z - 0.65); scene.add(arm);
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.11, 8, 8),
+    new THREE.MeshStandardMaterial({ color: 0xFFF8C0, emissive: 0xFFEE90, emissiveIntensity: 2.0 }));
+  bulb.position.set(x, 5.2, z - 1.28); scene.add(bulb);
+  const pl = new THREE.PointLight(0xFFF0A0, 0.45, 16);
+  pl.position.set(x, 5.0, z - 1.28); scene.add(pl);
+}
+addPole(-24, -46); addPole(24, 46); addPole(-46, 14); addPole(46, -14);
+addPole(-24, 46);  addPole(24, -46);
+
+// --- WEAPONS ---
+const weapons = {
+  ak47: {
+    name: 'AK-47', damage: 26, fireRate: 100, magSize: 30, reserve: 90,
+    recoil: 0.03, spread: 0.015, reloadTime: 2200, auto: true, sound: 'shoot'
+  },
+  pistol: {
+    name: 'Pistol', damage: 35, fireRate: 200, magSize: 12, reserve: 48,
+    recoil: 0.02, spread: 0.008, reloadTime: 1800, auto: false, sound: 'pistol'
+  }
+};
+
+// --- PLAYER ---
+const player = {
+  health: 100, armor: 50, kills: 0, deaths: 0,
+  speed: 0.12, sprintSpeed: 0.18, jumpForce: 0.2,
+  velocityY: 0, onGround: true, height: 1.7,
+  weapon: 'ak47', ammo: 30, reserve: 90,
+  lastShot: 0, reloading: false, reloadStart: 0,
+  alive: true, canShoot: true
+};
+
+camera.position.set(0, player.height, 50);
+
+// --- GUN MODEL (3D in scene) ---
+const gunGroup = new THREE.Group();
+
+// AK-47 model
+const akGroup = new THREE.Group();
+const akMetal = new THREE.MeshStandardMaterial({ color: 0x282828, roughness: 0.35, metalness: 0.75 });
+const akWood  = new THREE.MeshStandardMaterial({ color: 0x7B3C10, roughness: 0.85, metalness: 0.0 });
+const akDark  = new THREE.MeshStandardMaterial({ color: 0x1A1A1A, roughness: 0.4,  metalness: 0.6  });
+// Receiver body
+const akBody = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.075, 0.58), akMetal);
+akGroup.add(akBody);
+// Upper receiver / dust cover
+const akTop = new THREE.Mesh(new THREE.BoxGeometry(0.048, 0.038, 0.4), akDark);
+akTop.position.set(0, 0.056, -0.05); akGroup.add(akTop);
+// Handguard (wood)
+const akHandguard = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.052, 0.28), akWood);
+akHandguard.position.set(0, 0, -0.2); akGroup.add(akHandguard);
+// Stock (wood)
+const akStock = new THREE.Mesh(new THREE.BoxGeometry(0.037, 0.053, 0.27), akWood);
+akStock.position.set(0, -0.014, 0.37); akGroup.add(akStock);
+// Stock end plate
+const akStockEnd = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.068, 0.022), akDark);
+akStockEnd.position.set(0, -0.01, 0.512); akGroup.add(akStockEnd);
+// Barrel
+const akBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.38, 8), akMetal);
+akBarrel.rotation.x = Math.PI / 2; akBarrel.position.set(0, 0.01, -0.47); akGroup.add(akBarrel);
+// Muzzle device
+const akMuzzle = new THREE.Mesh(new THREE.CylinderGeometry(0.017, 0.014, 0.048, 8), akMetal);
+akMuzzle.rotation.x = Math.PI / 2; akMuzzle.position.set(0, 0.01, -0.672); akGroup.add(akMuzzle);
+// Magazine (curved AK style)
+const akMag = new THREE.Mesh(new THREE.BoxGeometry(0.037, 0.15, 0.068), akDark);
+akMag.position.set(0, -0.105, 0.04); akMag.rotation.x = -0.22; akGroup.add(akMag);
+// Pistol grip
+const akGrip = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.088, 0.037), akWood);
+akGrip.position.set(0, -0.084, 0.16); akGrip.rotation.x = -0.12; akGroup.add(akGrip);
+// Trigger guard
+const akTG = new THREE.Mesh(new THREE.BoxGeometry(0.013, 0.028, 0.068), akMetal);
+akTG.position.set(0, -0.05, 0.12); akGroup.add(akTG);
+// Iron sights
+const akSightR = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.024, 0.01), akMetal);
+akSightR.position.set(0, 0.054, 0.08); akGroup.add(akSightR);
+const akSightF = new THREE.Mesh(new THREE.BoxGeometry(0.007, 0.02, 0.007), akMetal);
+akSightF.position.set(0, 0.054, -0.35); akGroup.add(akSightF);
+
+// Pistol model
+const pistolGroup = new THREE.Group();
+const pMetal = new THREE.MeshStandardMaterial({ color: 0x1C1C1C, roughness: 0.3, metalness: 0.8 });
+const pGripM = new THREE.MeshStandardMaterial({ color: 0x2A2A2A, roughness: 0.9, metalness: 0.0 });
+// Slide
+const pistolSlide = new THREE.Mesh(new THREE.BoxGeometry(0.037, 0.068, 0.24), pMetal);
+pistolGroup.add(pistolSlide);
+// Ejection port
+const ejPort = new THREE.Mesh(new THREE.BoxGeometry(0.005, 0.028, 0.058),
+  new THREE.MeshStandardMaterial({color:0x111111}));
+ejPort.position.set(0.021, 0.01, -0.038); pistolGroup.add(ejPort);
+// Frame
+const pistolFrame = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.052, 0.178), pMetal);
+pistolFrame.position.set(0, -0.008, 0.03); pistolGroup.add(pistolFrame);
+// Barrel
+const pistolBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.14, 8), pMetal);
+pistolBarrel.rotation.x = Math.PI / 2; pistolBarrel.position.set(0, 0.018, -0.163);
+pistolGroup.add(pistolBarrel);
+// Grip
+const pistolGrip = new THREE.Mesh(new THREE.BoxGeometry(0.034, 0.098, 0.044), pGripM);
+pistolGrip.position.set(0, -0.074, 0.074); pistolGrip.rotation.x = -0.25;
+pistolGroup.add(pistolGrip);
+// Trigger guard
+const pTG = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.024, 0.058), pMetal);
+pTG.position.set(0, -0.04, 0.022); pistolGroup.add(pTG);
+// Mag base
+const pMagBase = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.013, 0.034), pMetal);
+pMagBase.position.set(0, -0.13, 0.072); pistolGroup.add(pMagBase);
+pistolGroup.visible = false;
+
+gunGroup.add(akGroup);
+gunGroup.add(pistolGroup);
+gunGroup.position.set(0.3, -0.28, -0.5);
+camera.add(gunGroup);
+scene.add(camera);
+
+// Muzzle flash
+const muzzleFlash = new THREE.Mesh(
+  new THREE.SphereGeometry(0.05, 8, 8),
+  new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0 })
+);
+muzzleFlash.position.set(0.3, -0.27, -1.22);
+camera.add(muzzleFlash);
+
+// --- ENEMIES ---
+const enemies = [];
+const ENEMY_COUNT = 8;
+const enemySpawns = [
+  { x: -30, z: -30 }, { x: 30, z: 30 }, { x: -50, z: 50 },
+  { x: 50, z: -50 }, { x: 0, z: -40 }, { x: 0, z: 40 },
+  { x: -40, z: 5 }, { x: 40, z: -5 }
+];
+
+function createEnemy(spawnIndex) {
+  const group = new THREE.Group();
+
+  const skinClr    = 0xC8956C;
+  const uniformClr = 0x4A5238;
+  const vestClr    = 0x353C2B;
+  const pantsClr   = 0x525548;
+  const bootClr    = 0x1E1A10;
+  const helmetClr  = 0x3A3F2F;
+  const gunClr     = 0x1A1A1A;
+  const mkStd = (c, r=0.85, m=0) => new THREE.MeshStandardMaterial({color:c, roughness:r, metalness:m});
+
+  // --- TORSO ---
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.55,0.68,0.3), mkStd(uniformClr));
+  torso.position.y = 1.2; torso.castShadow = true; group.add(torso);
+  // Tactical vest
+  const vest = new THREE.Mesh(new THREE.BoxGeometry(0.57,0.52,0.32), mkStd(vestClr));
+  vest.position.set(0,1.22,0); group.add(vest);
+  // Vest pouches
+  const pouchMat = mkStd(0x2A2E20);
+  const pL = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.11,0.08), pouchMat);
+  pL.position.set(-0.22,1.1,-0.19); group.add(pL);
+  const pR = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.11,0.08), pouchMat);
+  pR.position.set(0.22,1.1,-0.19); group.add(pR);
+
+  // --- NECK ---
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.08,0.14,8), mkStd(skinClr,0.8));
+  neck.position.y = 1.63; group.add(neck);
+
+  // --- HEAD ---
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.215,12,10), mkStd(skinClr,0.78));
+  head.position.y = 1.9; head.castShadow = true; group.add(head);
+  // Jaw
+  const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.15,10,8), mkStd(skinClr,0.8));
+  jaw.scale.y = 0.68; jaw.position.set(0,1.77,0.04); group.add(jaw);
+  // Eyes
+  const eyeMat = mkStd(0x1A1A30,0.3);
+  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.03,6,6), eyeMat);
+  eyeL.position.set(-0.073,1.915,0.18); group.add(eyeL);
+  const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.03,6,6), eyeMat);
+  eyeR.position.set(0.073,1.915,0.18); group.add(eyeR);
+  // Nose
+  const nose = new THREE.Mesh(new THREE.BoxGeometry(0.032,0.038,0.052), mkStd(0xAF7848,0.8));
+  nose.position.set(0,1.885,0.2); group.add(nose);
+
+  // --- HELMET ---
+  const helmetDome = new THREE.Mesh(
+    new THREE.SphereGeometry(0.25,12,8,0,Math.PI*2,0,Math.PI*0.62), mkStd(helmetClr,0.62));
+  helmetDome.position.y = 1.97; group.add(helmetDome);
+  const helmetBrim = new THREE.Mesh(new THREE.BoxGeometry(0.27,0.04,0.1), mkStd(helmetClr,0.62));
+  helmetBrim.position.set(0,1.84,-0.2); group.add(helmetBrim);
+  const strapMat = mkStd(0x252520,0.9);
+  const strapL = new THREE.Mesh(new THREE.BoxGeometry(0.018,0.17,0.018), strapMat);
+  strapL.position.set(-0.19,1.8,0.07); group.add(strapL);
+  const strapR = new THREE.Mesh(new THREE.BoxGeometry(0.018,0.17,0.018), strapMat);
+  strapR.position.set(0.19,1.8,0.07); group.add(strapR);
+
+  // --- PELVIS ---
+  const pelvis = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.22,0.28), mkStd(pantsClr));
+  pelvis.position.y = 0.78; group.add(pelvis);
+
+  // --- ARMS ---
+  const armMat = mkStd(uniformClr);
+  const skinMat = mkStd(skinClr,0.8);
+  const lUArm = new THREE.Mesh(new THREE.CylinderGeometry(0.074,0.068,0.36,8), armMat);
+  lUArm.position.set(-0.34,1.18,0); lUArm.rotation.z = 0.28; group.add(lUArm);
+  const lFArm = new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.054,0.33,8), skinMat);
+  lFArm.position.set(-0.47,0.88,0); lFArm.rotation.z = 0.15; group.add(lFArm);
+  const rUArm = new THREE.Mesh(new THREE.CylinderGeometry(0.074,0.068,0.36,8), armMat);
+  rUArm.position.set(0.34,1.18,0); rUArm.rotation.z = -0.28; group.add(rUArm);
+  const rFArm = new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.054,0.33,8), skinMat);
+  rFArm.position.set(0.47,0.88,0); rFArm.rotation.z = -0.15; group.add(rFArm);
+
+  // --- LEGS ---
+  const legMat = mkStd(pantsClr);
+  const leftThigh = new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.105,0.42,8), legMat);
+  leftThigh.position.set(-0.14,0.52,0); group.add(leftThigh);
+  const rightThigh = new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.105,0.42,8), legMat);
+  rightThigh.position.set(0.14,0.52,0); group.add(rightThigh);
+  const leftShin = new THREE.Mesh(new THREE.CylinderGeometry(0.092,0.078,0.38,8), legMat);
+  leftShin.position.set(-0.14,0.12,0); group.add(leftShin);
+  const rightShin = new THREE.Mesh(new THREE.CylinderGeometry(0.092,0.078,0.38,8), legMat);
+  rightShin.position.set(0.14,0.12,0); group.add(rightShin);
+
+  // --- BOOTS ---
+  const bootMat = mkStd(bootClr,0.75);
+  const lBoot = new THREE.Mesh(new THREE.BoxGeometry(0.18,0.14,0.3), bootMat);
+  lBoot.position.set(-0.14,-0.07,0.04); group.add(lBoot);
+  const rBoot = new THREE.Mesh(new THREE.BoxGeometry(0.18,0.14,0.3), bootMat);
+  rBoot.position.set(0.14,-0.07,0.04); group.add(rBoot);
+
+  // --- GUN ---
+  const gMat = mkStd(gunClr,0.35,0.65);
+  const gBody = new THREE.Mesh(new THREE.BoxGeometry(0.058,0.1,0.52), gMat);
+  gBody.position.set(-0.48,1.08,-0.18); group.add(gBody);
+  const gBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.013,0.013,0.28,8), gMat);
+  gBarrel.rotation.x = Math.PI/2; gBarrel.position.set(-0.48,1.1,-0.5); group.add(gBarrel);
+  const gMag = new THREE.Mesh(new THREE.BoxGeometry(0.038,0.14,0.06), mkStd(0x333333,0.5,0.3));
+  gMag.position.set(-0.48,0.97,-0.12); gMag.rotation.x = -0.15; group.add(gMag);
+  const gStock = new THREE.Mesh(new THREE.BoxGeometry(0.038,0.062,0.2), mkStd(0x6B3B10,0.85));
+  gStock.position.set(-0.48,1.05,0.12); group.add(gStock);
+
+  const sp = enemySpawns[spawnIndex % enemySpawns.length];
+  group.position.set(
+    sp.x + (Math.random() - 0.5) * 10,
+    0,
+    sp.z + (Math.random() - 0.5) * 10
+  );
+
+  scene.add(group);
+
+  return {
+    mesh: group, health: 100, alive: true, speed: 0.04 + Math.random() * 0.02,
+    state: 'patrol',
+    patrolTarget: new THREE.Vector3(
+      group.position.x + (Math.random() - 0.5) * 20,
+      0,
+      group.position.z + (Math.random() - 0.5) * 20
+    ),
+    lastShot: 0, shootInterval: 800 + Math.random() * 400,
+    detectionRange: 35, attackRange: 30,
+    spawnIndex: spawnIndex,
+    leftLeg: leftThigh, rightLeg: rightThigh
+  };
+}
+
+function spawnEnemies() {
+  enemies.forEach(e => scene.remove(e.mesh));
+  enemies.length = 0;
+  for (let i = 0; i < ENEMY_COUNT; i++) {
+    enemies.push(createEnemy(i));
+  }
+}
+
+// --- PARTICLES ---
+const particles = [];
+
+function createParticles(position, color, count) {
+  for (let i = 0; i < count; i++) {
+    const geo = new THREE.SphereGeometry(0.03 + Math.random() * 0.03, 4, 4);
+    const mat = new THREE.MeshBasicMaterial({ color: color });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(position);
+    scene.add(mesh);
+    particles.push({
+      mesh, life: 1,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: Math.random() * 0.15,
+      vz: (Math.random() - 0.5) * 0.15
+    });
+  }
+}
+
+function createBulletTrail(start, end) {
+  const geo = new THREE.BufferGeometry().setFromPoints([start, end]);
+  const mat = new THREE.LineBasicMaterial({ color: 0xffff88, transparent: true, opacity: 0.5 });
+  const line = new THREE.Line(geo, mat);
+  scene.add(line);
+  particles.push({ mesh: line, life: 0.3, vx: 0, vy: 0, vz: 0, isTrail: true });
+}
+
+// --- INPUT ---
+const keys = {};
+let mouseX = 0, mouseY = 0;
+let yaw = 0, pitch = 0;
+let isLocked = false;
+let canShootFlag = true;
+
+document.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'Digit1') switchWeapon('ak47');
+  if (e.code === 'Digit2') switchWeapon('pistol');
+  if (e.code === 'KeyR' && !player.reloading) reload();
+});
+document.addEventListener('keyup', e => keys[e.code] = false);
+
+document.addEventListener('mousemove', e => {
+  if (!isLocked) return;
+  yaw -= e.movementX * 0.002;
+  pitch -= e.movementY * 0.002;
+  pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
+});
+
+document.addEventListener('mousedown', e => {
+  if (e.button === 0 && isLocked && player.alive) {
+    shoot();
+    canShootFlag = false;
+  }
+});
+document.addEventListener('mouseup', e => {
+  if (e.button === 0) canShootFlag = true;
+});
+
+document.addEventListener('pointerlockchange', () => {
+  isLocked = document.pointerLockElement === renderer.domElement;
+  document.getElementById('blocker').style.display = isLocked ? 'none' : 'flex';
+});
+
+// --- GAME LOGIC ---
+let gameStarted = false;
+let round = 1;
+let stepTimer = 0;
+let recoilRecovery = 0;
+let gunBob = 0;
+
+function startGame() {
+  initAudio();
+  renderer.domElement.requestPointerLock();
+  gameStarted = true;
+  spawnEnemies();
+  respawnPlayer();
+}
+
+function respawnPlayer() {
+  player.health = 100;
+  player.armor = 50;
+  player.alive = true;
+  player.reloading = false;
+  const wp = weapons[player.weapon];
+  player.ammo = wp.magSize;
+  player.reserve = wp.reserve;
+  camera.position.set(
+    (Math.random() - 0.5) * 30,
+    player.height,
+    50 + (Math.random() - 0.5) * 10
+  );
+  yaw = Math.PI;
+  pitch = 0;
+  document.getElementById('death-screen').style.display = 'none';
+}
+
+function switchWeapon(name) {
+  if (player.weapon === name || player.reloading) return;
+  player.weapon = name;
+  const wp = weapons[name];
+  player.ammo = wp.magSize;
+  player.reserve = wp.reserve;
+  player.reloading = false;
+
+  akGroup.visible = name === 'ak47';
+  pistolGroup.visible = name === 'pistol';
+
+  document.getElementById('weapon-name').textContent = wp.name;
+  updateHUD();
+}
+
+function reload() {
+  const wp = weapons[player.weapon];
+  if (player.ammo >= wp.magSize || player.reserve <= 0) return;
+  player.reloading = true;
+  player.reloadStart = Date.now();
+  playSound('reload');
+
+  setTimeout(() => {
+    if (!player.alive) return;
+    const needed = wp.magSize - player.ammo;
+    const available = Math.min(needed, player.reserve);
+    player.ammo += available;
+    player.reserve -= available;
+    player.reloading = false;
+    updateHUD();
+  }, wp.reloadTime);
+}
+
+function shoot() {
+  if (!player.alive || player.reloading) return;
+  const wp = weapons[player.weapon];
+  const now = Date.now();
+
+  if (now - player.lastShot < wp.fireRate) return;
+  if (player.ammo <= 0) { reload(); return; }
+
+  player.lastShot = now;
+  player.ammo--;
+  playSound(wp.sound);
+
+  // Muzzle flash
+  muzzleFlash.material.opacity = 1;
+  setTimeout(() => muzzleFlash.material.opacity = 0, 50);
+
+  // Recoil
+  pitch += wp.recoil * (0.8 + Math.random() * 0.4);
+  yaw += (Math.random() - 0.5) * wp.recoil * 0.5;
+  recoilRecovery = wp.recoil;
+
+  // Gun kick animation
+  gunGroup.position.z = -0.42;
+
+  // Raycasting for hit detection
+  const spread = wp.spread * (keys['ShiftLeft'] ? 1.5 : 1);
+  const dir = new THREE.Vector3(
+    (Math.random() - 0.5) * spread,
+    (Math.random() - 0.5) * spread,
+    -1
+  );
+  dir.applyQuaternion(camera.quaternion).normalize();
+
+  const raycaster = new THREE.Raycaster(camera.position.clone(), dir, 0, 200);
+
+  // Check enemy hits
+  let hitEnemy = false;
+  for (const enemy of enemies) {
+    if (!enemy.alive) continue;
+    const intersects = raycaster.intersectObjects(enemy.mesh.children, true);
+    if (intersects.length > 0) {
+      const hitPoint = intersects[0].point;
+
+      // Headshot detection
+      const headY = enemy.mesh.position.y + 1.7;
+      const isHeadshot = hitPoint.y > headY - 0.3;
+      const dmg = isHeadshot ? wp.damage * 3 : wp.damage;
+
+      enemy.health -= dmg;
+      enemy.state = 'chase';
+
+      createParticles(hitPoint, isHeadshot ? 0xff0000 : 0xcc4444, isHeadshot ? 8 : 4);
+      createBulletTrail(camera.position.clone(), hitPoint);
+
+      // Hit marker
+      const hm = document.getElementById('hit-marker');
+      hm.style.opacity = 1;
+      setTimeout(() => hm.style.opacity = 0, 100);
+      playSound('hit');
+
+      if (enemy.health <= 0) {
+        enemy.alive = false;
+        enemy.mesh.visible = false;
+        player.kills++;
+        playSound('kill');
+        addKillFeed(isHeadshot);
+
+        // Respawn enemy after delay
+        setTimeout(() => {
+          if (!gameStarted) return;
+          enemy.mesh.position.set(
+            enemySpawns[enemy.spawnIndex % enemySpawns.length].x + (Math.random()-0.5)*10,
+            0,
+            enemySpawns[enemy.spawnIndex % enemySpawns.length].z + (Math.random()-0.5)*10
+          );
+          enemy.health = 100;
+          enemy.alive = true;
+          enemy.mesh.visible = true;
+          enemy.state = 'patrol';
+        }, 4000);
+
+        checkRound();
+      }
+      hitEnemy = true;
+      break;
+    }
+  }
+
+  // Bullet impact on walls
+  if (!hitEnemy) {
+    const wallMeshes = mapWalls.map(w => w.mesh);
+    const intersects = raycaster.intersectObjects(wallMeshes);
+    if (intersects.length > 0) {
+      createParticles(intersects[0].point, 0x999999, 3);
+      createBulletTrail(camera.position.clone(), intersects[0].point);
+    }
+  }
+
+  updateHUD();
+}
+
+function addKillFeed(headshot) {
+  const feed = document.getElementById('kill-feed');
+  const entry = document.createElement('div');
+  entry.className = 'kill-entry';
+  entry.innerHTML = `You <span style="color:#ff6600">${headshot ? '⊕ HEADSHOT' : '→'}</span> Enemy`;
+  feed.appendChild(entry);
+  setTimeout(() => entry.remove(), 4000);
+}
+
+function checkRound() {
+  const aliveEnemies = enemies.filter(e => e.alive).length;
+  if (aliveEnemies === 0) {
+    round++;
+    const rd = document.getElementById('round-display');
+    rd.textContent = `ROUND ${round}`;
+    rd.style.opacity = 1;
+    setTimeout(() => rd.style.opacity = 0, 2000);
+
+    setTimeout(() => spawnEnemies(), 3000);
+  }
+}
+
+function playerTakeDamage(amount) {
+  if (!player.alive) return;
+
+  // Armor absorbs some damage
+  if (player.armor > 0) {
+    const armorDmg = Math.min(amount * 0.6, player.armor);
+    player.armor -= armorDmg;
+    amount -= armorDmg * 0.5;
+  }
+
+  player.health -= Math.round(amount);
+  playSound('damage');
+
+  // Damage overlay
+  const overlay = document.getElementById('damage-overlay');
+  overlay.style.opacity = 0.6;
+  setTimeout(() => overlay.style.opacity = 0, 300);
+
+  if (player.health <= 0) {
+    player.health = 0;
+    player.alive = false;
+    player.deaths++;
+    document.getElementById('death-screen').style.display = 'flex';
+
+    setTimeout(() => respawnPlayer(), 3000);
+  }
+  updateHUD();
+}
+
+// --- COLLISION DETECTION ---
+function checkCollision(x, z, radius) {
+  for (const wall of mapWalls) {
+    const wx = wall.mesh.position.x;
+    const wz = wall.mesh.position.z;
+    const hw = wall.hw + radius;
+    const hd = wall.hd + radius;
+
+    if (x > wx - hw && x < wx + hw && z > wz - hd && z < wz + hd) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function checkLineOfSight(from, to) {
+  const dir = new THREE.Vector3().subVectors(to, from).normalize();
+  const dist = from.distanceTo(to);
+  const raycaster = new THREE.Raycaster(from, dir, 0, dist);
+  const wallMeshes = mapWalls.map(w => w.mesh);
+  const intersects = raycaster.intersectObjects(wallMeshes);
+  return intersects.length === 0;
+}
+
+// --- ENEMY AI ---
+function updateEnemies(delta) {
+  const playerPos = camera.position.clone();
+  playerPos.y = 0;
+
+  for (const enemy of enemies) {
+    if (!enemy.alive) continue;
+
+    const ePos = enemy.mesh.position;
+    const distToPlayer = ePos.distanceTo(playerPos);
+    const eyePos = new THREE.Vector3(ePos.x, 1.5, ePos.z);
+    const playerEye = new THREE.Vector3(playerPos.x, player.height, playerPos.z);
+    const canSee = checkLineOfSight(eyePos, playerEye);
+
+    // State transitions
+    if (canSee && distToPlayer < enemy.detectionRange && player.alive) {
+      enemy.state = distToPlayer < enemy.attackRange ? 'attack' : 'chase';
+    } else if (enemy.state !== 'patrol') {
+      if (!canSee || distToPlayer > enemy.detectionRange * 1.5) {
+        enemy.state = 'patrol';
+      }
+    }
+
+    // Face player when chasing/attacking
+    if (enemy.state === 'chase' || enemy.state === 'attack') {
+      const angle = Math.atan2(playerPos.x - ePos.x, playerPos.z - ePos.z);
+      enemy.mesh.rotation.y = angle;
+    }
+
+    // Movement
+    let moveX = 0, moveZ = 0;
+
+    if (enemy.state === 'patrol') {
+      const dx = enemy.patrolTarget.x - ePos.x;
+      const dz = enemy.patrolTarget.z - ePos.z;
+      const patrolDist = Math.sqrt(dx*dx + dz*dz);
+
+      if (patrolDist < 2) {
+        enemy.patrolTarget.set(
+          ePos.x + (Math.random() - 0.5) * 30,
+          0,
+          ePos.z + (Math.random() - 0.5) * 30
+        );
+        enemy.patrolTarget.x = Math.max(-MAP_SIZE+5, Math.min(MAP_SIZE-5, enemy.patrolTarget.x));
+        enemy.patrolTarget.z = Math.max(-MAP_SIZE+5, Math.min(MAP_SIZE-5, enemy.patrolTarget.z));
+      }
+
+      moveX = (dx / patrolDist) * enemy.speed * 0.5;
+      moveZ = (dz / patrolDist) * enemy.speed * 0.5;
+
+      const patrolAngle = Math.atan2(dx, dz);
+      enemy.mesh.rotation.y = patrolAngle;
+
+    } else if (enemy.state === 'chase') {
+      const dx = playerPos.x - ePos.x;
+      const dz = playerPos.z - ePos.z;
+      const d = Math.sqrt(dx*dx + dz*dz);
+      moveX = (dx / d) * enemy.speed;
+      moveZ = (dz / d) * enemy.speed;
+
+    } else if (enemy.state === 'attack') {
+      // Strafe while shooting
+      const angle = Math.atan2(playerPos.x - ePos.x, playerPos.z - ePos.z);
+      const strafeAngle = angle + Math.PI/2 + Math.sin(Date.now() * 0.002) * 0.5;
+      moveX = Math.sin(strafeAngle) * enemy.speed * 0.4;
+      moveZ = Math.cos(strafeAngle) * enemy.speed * 0.4;
+
+      // Shoot at player
+      const now = Date.now();
+      if (now - enemy.lastShot > enemy.shootInterval && canSee) {
+        enemy.lastShot = now;
+
+        // Accuracy decreases with distance
+        const accuracy = Math.max(0.5, 1 - distToPlayer / 50);
+        if (Math.random() < accuracy * 0.4) {
+          playerTakeDamage(8 + Math.random() * 7);
+        }
+
+        // Enemy muzzle flash
+        createParticles(
+          new THREE.Vector3(ePos.x, 1.2, ePos.z),
+          0xffaa00, 2
+        );
+      }
+    }
+
+    // Apply movement with collision
+    const newX = ePos.x + moveX;
+    const newZ = ePos.z + moveZ;
+    if (!checkCollision(newX, ePos.z, 0.5)) ePos.x = newX;
+    if (!checkCollision(ePos.x, newZ, 0.5)) ePos.z = newZ;
+
+    // Keep in bounds
+    ePos.x = Math.max(-MAP_SIZE+2, Math.min(MAP_SIZE-2, ePos.x));
+    ePos.z = Math.max(-MAP_SIZE+2, Math.min(MAP_SIZE-2, ePos.z));
+
+    // Walking animation
+    if (enemy.state === 'chase' || enemy.state === 'patrol') {
+      const walkCycle = Math.sin(Date.now() * 0.01) * 0.38;
+      if (enemy.leftLeg)  enemy.leftLeg.rotation.x  =  walkCycle;
+      if (enemy.rightLeg) enemy.rightLeg.rotation.x = -walkCycle;
+    }
+  }
+}
+
+// --- MINIMAP ---
+function drawMinimap() {
+  const canvas = document.getElementById('minimap');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const scale = w / (MAP_SIZE * 2);
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = 'rgba(0,0,0,0.7)';
+  ctx.fillRect(0, 0, w, h);
+
+  // Draw walls
+  ctx.fillStyle = 'rgba(150,140,130,0.6)';
+  for (const wall of mapWalls) {
+    const x = (wall.mesh.position.x + MAP_SIZE) * scale;
+    const z = (wall.mesh.position.z + MAP_SIZE) * scale;
+    const ww = wall.hw * 2 * scale;
+    const wd = wall.hd * 2 * scale;
+    ctx.fillRect(x - ww/2, z - wd/2, ww, wd);
+  }
+
+  // Draw enemies
+  for (const enemy of enemies) {
+    if (!enemy.alive) continue;
+    const ex = (enemy.mesh.position.x + MAP_SIZE) * scale;
+    const ez = (enemy.mesh.position.z + MAP_SIZE) * scale;
+    ctx.fillStyle = enemy.state === 'attack' ? '#ff4444' : '#ff8844';
+    ctx.beginPath();
+    ctx.arc(ex, ez, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Draw player
+  const px = (camera.position.x + MAP_SIZE) * scale;
+  const pz = (camera.position.z + MAP_SIZE) * scale;
+  ctx.fillStyle = '#44ff44';
+  ctx.beginPath();
+  ctx.arc(px, pz, 3, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Player direction
+  ctx.strokeStyle = '#44ff44';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(px, pz);
+  ctx.lineTo(px + Math.sin(yaw) * -8, pz + Math.cos(yaw) * -8);
+  ctx.stroke();
+}
+
+// --- HUD UPDATE ---
+function updateHUD() {
+  document.getElementById('health-fill').style.width = player.health + '%';
+  document.getElementById('health-text').textContent = Math.max(0, player.health);
+  document.getElementById('armor-fill').style.width = player.armor + '%';
+  document.getElementById('armor-text').textContent = Math.max(0, Math.round(player.armor));
+  document.getElementById('ammo-current').textContent = player.ammo;
+  document.getElementById('ammo-reserve').textContent = player.reserve;
+  document.getElementById('kills').textContent = player.kills;
+  document.getElementById('deaths').textContent = player.deaths;
+  document.getElementById('round').textContent = round;
+
+  // Health color
+  const hf = document.getElementById('health-fill');
+  if (player.health > 50) hf.style.background = 'linear-gradient(90deg, #00ff44, #44ff88)';
+  else if (player.health > 25) hf.style.background = 'linear-gradient(90deg, #ffaa00, #ffcc44)';
+  else hf.style.background = 'linear-gradient(90deg, #ff2200, #ff4444)';
+}
+
+// --- GAME LOOP ---
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  if (!gameStarted || !isLocked) { renderer.render(scene, camera); return; }
+
+  const delta = clock.getDelta();
+  const now = Date.now();
+
+  if (player.alive) {
+    // Camera rotation
+    camera.rotation.set(0, 0, 0);
+    camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), yaw);
+    camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), pitch);
+
+    // Movement
+    const speed = keys['ShiftLeft'] ? player.sprintSpeed : player.speed;
+    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+    forward.y = 0;
+    forward.normalize();
+    const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+    right.y = 0;
+    right.normalize();
+
+    let moved = false;
+    let moveX = camera.position.x;
+    let moveZ = camera.position.z;
+
+    if (keys['KeyW']) { moveX += forward.x * speed; moveZ += forward.z * speed; moved = true; }
+    if (keys['KeyS']) { moveX -= forward.x * speed; moveZ -= forward.z * speed; moved = true; }
+    if (keys['KeyA']) { moveX -= right.x * speed; moveZ -= right.z * speed; moved = true; }
+    if (keys['KeyD']) { moveX += right.x * speed; moveZ += right.z * speed; moved = true; }
+
+    // Apply movement with collision
+    if (!checkCollision(moveX, camera.position.z, 0.4)) camera.position.x = moveX;
+    if (!checkCollision(camera.position.x, moveZ, 0.4)) camera.position.z = moveZ;
+
+    // Bounds
+    camera.position.x = Math.max(-MAP_SIZE+2, Math.min(MAP_SIZE-2, camera.position.x));
+    camera.position.z = Math.max(-MAP_SIZE+2, Math.min(MAP_SIZE-2, camera.position.z));
+
+    // Jump
+    if (keys['Space'] && player.onGround) {
+      player.velocityY = player.jumpForce;
+      player.onGround = false;
+    }
+
+    player.velocityY -= 0.008;
+    camera.position.y += player.velocityY;
+
+    if (camera.position.y <= player.height) {
+      camera.position.y = player.height;
+      player.velocityY = 0;
+      player.onGround = true;
+    }
+
+    // Footstep sounds
+    if (moved && player.onGround) {
+      stepTimer += delta;
+      const stepInterval = keys['ShiftLeft'] ? 0.3 : 0.45;
+      if (stepTimer > stepInterval) {
+        stepTimer = 0;
+        playSound('step');
+      }
+    }
+
+    // Auto-fire for automatic weapons
+    const wp = weapons[player.weapon];
+    if (wp.auto && !canShootFlag && player.alive && !player.reloading) {
+      shoot();
+    }
+
+    // Recoil recovery
+    if (recoilRecovery > 0) {
+      pitch -= recoilRecovery * 0.05;
+      recoilRecovery *= 0.9;
+      if (recoilRecovery < 0.001) recoilRecovery = 0;
+    }
+
+    // Gun bob
+    if (moved && player.onGround) {
+      gunBob += delta * (keys['ShiftLeft'] ? 12 : 8);
+      gunGroup.position.y = -0.28 + Math.sin(gunBob) * 0.01;
+      gunGroup.position.x = 0.3 + Math.cos(gunBob * 0.5) * 0.005;
+    }
+
+    // Gun position recovery
+    gunGroup.position.z += (-0.5 - gunGroup.position.z) * 0.15;
+
+    // Reload animation
+    if (player.reloading) {
+      const progress = (now - player.reloadStart) / weapons[player.weapon].reloadTime;
+      gunGroup.rotation.x = Math.sin(progress * Math.PI) * 0.5;
+    } else {
+      gunGroup.rotation.x *= 0.9;
+    }
+  }
+
+  // Update enemies
+  updateEnemies(delta);
+
+  // Update particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.life -= delta * (p.isTrail ? 3 : 2);
+    if (p.life <= 0) {
+      scene.remove(p.mesh);
+      if (p.mesh.geometry) p.mesh.geometry.dispose();
+      if (p.mesh.material) p.mesh.material.dispose();
+      particles.splice(i, 1);
+    } else {
+      if (!p.isTrail) {
+        p.mesh.position.x += p.vx;
+        p.mesh.position.y += p.vy;
+        p.mesh.position.z += p.vz;
+        p.vy -= 0.005;
+      }
+      p.mesh.material.opacity = p.life;
+    }
+  }
+
+  // Minimap
+  drawMinimap();
+  updateHUD();
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+// Handle window resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 </script>
 </body>
